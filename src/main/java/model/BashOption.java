@@ -16,11 +16,12 @@ public enum BashOption {
         this.stringOption = stringOption;
     }
 
+
     /**Return BashOption correspond of {@param value} or null     *
      * @param value
      * @return
      */
-    public BashOption getOptionFromString(String value) {
+    public static BashOption getOptionFromString(String value) {
         if (value==null) return null;
         BashOption bash = null;
         for (BashOption bashOption : BashOption.values()) {

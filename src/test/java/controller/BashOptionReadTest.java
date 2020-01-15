@@ -5,6 +5,7 @@ import model.BashOption;
 import model.Settings;
 import org.junit.jupiter.api.Test;
 
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,12 +31,18 @@ class BashOptionReadTest {
 
         String[] input5 = null;
 
+        String[] input6= new String[3];
+        input6[0] = "-d";
+        input6[1] = "/a/0/1";
+        input6[2] = null;
+
+
         BashOptionRead bashOptionRead1 = new BashOptionRead(input1);
         BashOptionRead bashOptionRead2 = new BashOptionRead(input2);
         BashOptionRead bashOptionRead3 = new BashOptionRead(input3);
         BashOptionRead bashOptionRead4 = new BashOptionRead(input4);
         BashOptionRead bashOptionRead5 = new BashOptionRead(input5);
-
+        BashOptionRead bashOptionRead6 = new BashOptionRead(input6);
 
         try {
             Settings settings1 = bashOptionRead1.getSettings();
@@ -64,12 +71,15 @@ class BashOptionReadTest {
 
         } catch (InvalidBashOption ex) {
             fail();
+        } catch (UnsupportedEncodingException e) {
+            fail();
         }
 
 
         try {
             Settings settings4 = bashOptionRead4.getSettings();
             Settings settings5 = bashOptionRead5.getSettings();
+            Settings settings6 = bashOptionRead6.getSettings();
 
         } catch (InvalidBashOption ex) {
             assertTrue(true);

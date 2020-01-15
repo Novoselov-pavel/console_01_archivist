@@ -18,4 +18,10 @@ public class Archivist {
     public static String getVersionID() {
         return versionID;
     }
+
+    public static void exitProgramm(int status, String message) {
+        if (message!=null)
+            System.out.println(message);
+        System.exit(status);
+    }
 }

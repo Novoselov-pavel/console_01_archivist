@@ -1,0 +1,5 @@
+gui/Archivist.class
+controller/BashOptionRead.class
+model/Settings.class
+model/Help.class
+model/BashOption.class

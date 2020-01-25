@@ -6,6 +6,8 @@ import java.util.zip.CRC32;
 
 public class GetCrc32 {
     private final int BUFFER_SIZE = 8192;
+    private final String DIR_CRC = "DIR";
+    private String returnCrc32="";
     private CRC32 crc32 = new CRC32();
 
 
@@ -25,6 +27,11 @@ public class GetCrc32 {
      * @throws IOException
      */
     public void update (File file) throws IOException {
+        if (file.isDirectory()) {
+            returnCrc32 = DIR_CRC;
+            return;
+        }
+
         FileInputStream stream = new FileInputStream(file);
         BufferedInputStream bufferedInputStream = new BufferedInputStream(stream);
 
@@ -85,8 +92,12 @@ public class GetCrc32 {
     /**
      * Returns CRC-32 value.
      */
-    public long getValue() {
-        return crc32.getValue();
+    public String getValue() {
+        if (returnCrc32.isBlank()) {
+            return Long.toString(crc32.getValue());
+        } else {
+            return returnCrc32;
+        }
     }
 
     /**

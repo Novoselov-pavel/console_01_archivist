@@ -1,5 +1,7 @@
 package gui;
 
+import model.Settings;
+
 /**Main class
  *
  */
@@ -10,10 +12,12 @@ public class Archivist {
                                       "This is free software: you are free to change and redistribute it.\n"+
                                       "There is NO WARRANTY, to the extent permitted by law.";
 
+    private static Settings settings= null;
 
     public static void main(String[] args) {
 
     }
+
 
     public static String getVersionID() {
         return versionID;
@@ -23,5 +27,9 @@ public class Archivist {
         if (message!=null)
             System.out.println(message);
         System.exit(status);
+    }
+
+    public static Settings getSettings() {
+        return settings;
     }
 }

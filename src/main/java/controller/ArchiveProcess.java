@@ -10,7 +10,7 @@ import java.util.Date;
 
 
 public class ArchiveProcess {
-    private final Settings setting = Archivist.getSettings();
+    private final Settings setting;
     private final String OUTPUT_FILE_NAME_FORMAT = "%s%d.zip";
     private final String INI_FILE_NAME_FORMAT = "%s%d_prop.ini";
     private final int MAX_ITERATION = 10;
@@ -19,8 +19,16 @@ public class ArchiveProcess {
     private FileItem iniFile;
     private ArrayList<FileItem> fileList = new ArrayList<>();
 
+    public ArchiveProcess(Settings setting) {
+        this.setting = setting;
+        checkInputPath(Paths.get(setting.getInputPath()));
+        checkOutputPath(Paths.get(setting.getOutputPath()));
+        getOutputFiles();
+    }
+
 
     public ArchiveProcess() {
+        this.setting = Archivist.getSettings();
         checkInputPath(Paths.get(setting.getInputPath()));
         checkOutputPath(Paths.get(setting.getOutputPath()));
         getOutputFiles();
@@ -42,13 +50,14 @@ public class ArchiveProcess {
 
         GetCrc32 zipCRC = new GetCrc32();
         try {
-            zipCRC.update(outputFile.getFile());
+            zipCRC.update(outputFile.getEndFile());
             outputFile.setCrc32(zipCRC.getValue());
         } catch (IOException e) {
             Archivist.exitProgramm(2,e.getMessage());
         }
         fileList.add(outputFile);
-
+        IniClass iniClass = new IniClass(fileList,iniFile);
+        iniClass.storeToFile();
         return true;
     }
 
@@ -63,10 +72,10 @@ public class ArchiveProcess {
     }
 
     private void writeFileListToZIP(ZipOutputStream stream) {
-        Iterator<FileItem> iterator = fileList.iterator();
+        ArrayList<FileItem> task = new ArrayList<>(fileList);
+        Iterator<FileItem> iterator = task.iterator();
         int currentLoop = 0;
         int maxIter = MAX_ITERATION*fileList.size();
-        int startArraySize = fileList.size();
         while (iterator.hasNext()) {
             FileItem fileItem = iterator.next();
             try {
@@ -89,19 +98,17 @@ public class ArchiveProcess {
                         stream.write(buffer);
                     }
                     fileItem.setCrc32(getCrc32.getValue());
-                    iterator.remove();
                 }
+                iterator.remove();
             } catch (FileNotFoundException e) {
                 Archivist.exitProgramm(2,e.getMessage());
             } catch (IOException e) {
             }
-            if (++currentLoop % startArraySize == 0) {
-                if (currentLoop<maxIter) {
-                    try {
-                        Thread.sleep((int)Math.random()*MAX_TIMEOUT);
-                    } catch (InterruptedException e) {
-                    }
-               }
+
+            if (++currentLoop % fileList.size() ==0 && currentLoop<maxIter) {
+              try {
+                    Thread.sleep((int)Math.random()*MAX_TIMEOUT);
+                  } catch (InterruptedException e) {}
             }
         }
     }

@@ -32,7 +32,7 @@ public class FileItem implements Serializable {
 
     }
 
-    public FileItem (String startDirectoryName, String endDirectoryName, File inputFile) {
+    public FileItem(String startDirectoryName, String endDirectoryName, File inputFile) {
         if (inputFile.isDirectory()) {
             isDirectory = true;
             crc32 = DIR_CRC32;
@@ -47,8 +47,12 @@ public class FileItem implements Serializable {
     }
 
 
-    public File getFile () {
+    public File getStartFile() {
         return new File(getStartFileName());
+    }
+
+    public File getEndFile() {
+        return new File(getEndFileName());
     }
 
     public String getEndFileName () {

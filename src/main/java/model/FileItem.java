@@ -5,14 +5,13 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class FileItem implements Serializable {
-    private static final long serialVersionUID = 20200125001L;
+    private static final long serialVersionUID = 20200125002L;
     public transient static final String DIR_CRC32 = "DIR";
-    private String startDirectoryName;
-    private String endDirectoryName;
-    private String filePath;
+    private String directoryName;
+    private String relativeFilePath;
     private boolean isDirectory;
     private String crc32;
-
+    private boolean isExitFile = false;
 
     public static String getPath (String directory, String fileName) {
         if (directory.endsWith("/")) {
@@ -22,17 +21,38 @@ public class FileItem implements Serializable {
         }
     }
 
-
-    public FileItem(String startDirectoryName, String endDirectoryName,String filePath, boolean isDirectory, String crc32) {
-        this.startDirectoryName = startDirectoryName;
-        this.endDirectoryName = endDirectoryName;
-        this.filePath = filePath;
-        this.isDirectory = isDirectory;
-        this.crc32 = crc32;
-
+    public static String getDirectoryFromFile (File file) {
+        return getDirectoryFromFile(file.getPath());
     }
 
-    public FileItem(String startDirectoryName, String endDirectoryName, File inputFile) {
+    public static String getDirectoryFromFile (String filePath) {
+        filePath = filePath.substring(0,filePath.lastIndexOf("/")+1);
+        return filePath;
+    }
+
+    public static String getRelativeFilePathFromFull(String basePath, File file) {
+        return getRelativeFilePathFromFull(basePath,file.getPath(),file.isDirectory());
+    }
+
+    public static String getRelativeFilePathFromFull(String basePath, String fullPath, boolean isDirectory) {
+        String retValue;
+        if (isDirectory) {
+            retValue= fullPath.substring(basePath.length()) + "/";
+        } else {
+            retValue = fullPath.substring(basePath.length());
+        }
+        return retValue;
+    }
+
+
+    public FileItem(String basePath, String fullPath, boolean isDirectory, String crc32) {
+        this.directoryName = basePath;
+        this.relativeFilePath = getRelativeFilePathFromFull(basePath,fullPath,isDirectory);
+        this.isDirectory = isDirectory;
+        this.crc32 = crc32;
+    }
+
+    public FileItem(String basePath, File inputFile) {
         if (inputFile.isDirectory()) {
             isDirectory = true;
             crc32 = DIR_CRC32;
@@ -40,32 +60,33 @@ public class FileItem implements Serializable {
             isDirectory = false;
             crc32 = null;
         }
-        this.startDirectoryName = startDirectoryName;
-        this.endDirectoryName = endDirectoryName;
-        this.filePath = zipFileName(inputFile.getAbsolutePath(),isDirectory);
+        this.directoryName = basePath;
+        this.relativeFilePath = getRelativeFilePathFromFull(basePath,inputFile);
+
+    }
+
+    public FileItem(File inputFile) {
+        if (inputFile.isDirectory()) {
+            isDirectory = true;
+            crc32 = DIR_CRC32;
+        } else {
+            isDirectory = false;
+            crc32 = null;
+        }
+        this.directoryName = getDirectoryFromFile(inputFile);
+        this.relativeFilePath = getRelativeFilePathFromFull(directoryName,inputFile);
 
     }
 
 
-    public File getStartFile() {
-        return new File(getStartFileName());
+    public File getFile() {
+        return new File(getFullFileName());
     }
 
-    public File getEndFile() {
-        return new File(getEndFileName());
+    public String getFullFileName () {
+        return getPath(directoryName,relativeFilePath);
     }
 
-    public String getEndFileName () {
-        return getPath(endDirectoryName,filePath);
-    }
-
-    public String getStartFileName () {
-        return getPath(startDirectoryName,filePath);
-    }
-
-    public String getZipFileName() {
-        return filePath;
-    }
 
     public boolean isDirectory() {
         return isDirectory;
@@ -75,37 +96,60 @@ public class FileItem implements Serializable {
         this.crc32 = crc32;
     }
 
+    public boolean isExitFile() {
+        return isExitFile;
+    }
+
+    public void setExitFile(boolean exitFile) {
+        isExitFile = exitFile;
+    }
+
+    public String getDirectoryName() {
+        return directoryName;
+    }
+
+    public void setDirectoryName(String directoryName) {
+        this.directoryName = checkAndReturnDirectoryPath(directoryName,true);
+    }
+
+    public String getRelativeFilePath() {
+        return relativeFilePath;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || !(o instanceof FileItem)) return false;
-        FileItem fileItem = (FileItem) o;
-        return isDirectory == fileItem.isDirectory &&
-                Objects.equals(startDirectoryName, fileItem.startDirectoryName) &&
-                Objects.equals(endDirectoryName, fileItem.endDirectoryName) &&
-                Objects.equals(filePath, fileItem.filePath) &&
-                Objects.equals(crc32, fileItem.crc32);
+        FileItem item = (FileItem) o;
+        return isDirectory == item.isDirectory &&
+                isExitFile == item.isExitFile &&
+                Objects.equals(directoryName, item.directoryName) &&
+                Objects.equals(relativeFilePath, item.relativeFilePath) &&
+                Objects.equals(crc32, item.crc32);
     }
 
     @Override
     public int hashCode() {
-        return 1025+31*Objects.hash(startDirectoryName, endDirectoryName, filePath, isDirectory, crc32);
+        return Objects.hash(directoryName, relativeFilePath, isDirectory, crc32, isExitFile);
     }
 
-    private String zipFileName (File file) {
-        return zipFileName(file.getPath(),file.isDirectory());
-    }
-
-    private String zipFileName (String fileName, boolean isDirectory) {
-        String retValue;
+    private String checkAndReturnDirectoryPath (String path, boolean isDirectory) {
         if (isDirectory) {
-            retValue= fileName.substring(startDirectoryName.length()) + "/";
-        } else {
-            retValue = fileName.substring(startDirectoryName.length());
+            if (!path.endsWith("/")) {
+                return path+"/";
+            } else
+                return path;
         }
-        return retValue;
+        else
+            return path;
+
     }
+
+
+
+
+
+
 
 
 

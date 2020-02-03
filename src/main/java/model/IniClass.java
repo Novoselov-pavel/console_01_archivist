@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 public class IniClass implements Serializable {
-    private static final long serialVersionUID = 202001251001L;
+    private static final long serialVersionUID = 202001251002L;
     private transient final String PREFIX = "INI file for Archivist";
     private transient FileItem iniFileItem;
     private List<FileItem> itemList;
@@ -21,7 +21,7 @@ public class IniClass implements Serializable {
     }
 
     public void storeToFile() {
-        try(FileOutputStream stream = new FileOutputStream(iniFileItem.getEndFileName())) {
+        try(FileOutputStream stream = new FileOutputStream(iniFileItem.getFullFileName())) {
             storeToFile(stream);
 
         } catch (IOException e) {
@@ -30,7 +30,7 @@ public class IniClass implements Serializable {
     }
 
     public void loadFromFile() {
-        try(FileInputStream stream = new FileInputStream(iniFileItem.getEndFileName())) {
+        try(FileInputStream stream = new FileInputStream(iniFileItem.getFullFileName())) {
             loadFromFile(stream);
         } catch (IOException | ClassNotFoundException e) {
             Archivist.exitProgramm(2, e.getMessage());

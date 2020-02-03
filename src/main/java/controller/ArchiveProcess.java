@@ -11,10 +11,6 @@ import java.util.Date;
 
 public class ArchiveProcess {
     private final Settings setting;
-    private final String OUTPUT_FILE_NAME_FORMAT = "%s%d.zip";
-    private final String INI_FILE_NAME_FORMAT = "%s%d_prop.ini";
-    private final int MAX_ITERATION = 10;
-    private final int MAX_TIMEOUT = 30_000;
     private FileItem outputFile;
     private FileItem iniFile;
     private ArrayList<FileItem> fileList = new ArrayList<>();
@@ -35,7 +31,7 @@ public class ArchiveProcess {
     }
 
     public boolean write() {
-        try(FileOutputStream stream = new FileOutputStream(outputFile.getEndFileName());
+        try(FileOutputStream stream = new FileOutputStream(outputFile.getFullFileName());
             ZipOutputStream zipOut = new ZipOutputStream(stream)) {
             zipOut.setEncoding(setting.getConsoleEncode());
             zipOut.setUseZip64(Zip64Mode.Always);
@@ -50,7 +46,7 @@ public class ArchiveProcess {
 
         GetCrc32 zipCRC = new GetCrc32();
         try {
-            zipCRC.update(outputFile.getEndFile());
+            zipCRC.update(outputFile.getFullFileName());
             outputFile.setCrc32(zipCRC.getValue());
         } catch (IOException e) {
             Archivist.exitProgramm(2,e.getMessage());
@@ -64,7 +60,7 @@ public class ArchiveProcess {
     private void fillFileList(File fileSource) {
         File[] files = fileSource.listFiles();
         for (File file : files) {
-            fileList.add(new FileItem(setting.getInputPath(),setting.getOutputPath(),file));
+            fileList.add(new FileItem(setting.getInputPath(),file));
             if (file.isDirectory()) {
                 fillFileList(file);
             }
@@ -75,15 +71,15 @@ public class ArchiveProcess {
         ArrayList<FileItem> task = new ArrayList<>(fileList);
         Iterator<FileItem> iterator = task.iterator();
         int currentLoop = 0;
-        int maxIter = MAX_ITERATION*fileList.size();
+        int maxIter = setting.MAX_ITERATION*fileList.size();
         while (iterator.hasNext()) {
             FileItem fileItem = iterator.next();
             try {
-                ZipEntry entry = new ZipEntry(fileItem.getZipFileName());
+                ZipEntry entry = new ZipEntry(fileItem.getRelativeFilePath());
                 stream.putNextEntry(entry);
                 if (!fileItem.isDirectory()) {
                     GetCrc32 getCrc32 = new GetCrc32();
-                    FileInputStream fileInputStream = new FileInputStream(fileItem.getStartFileName());
+                    FileInputStream fileInputStream = new FileInputStream(fileItem.getFullFileName());
                     BufferedInputStream bufferedStream = new BufferedInputStream(fileInputStream);
                     while (bufferedStream.available()>0){
                         byte[] buffer;
@@ -103,25 +99,16 @@ public class ArchiveProcess {
             } catch (FileNotFoundException e) {
                 Archivist.exitProgramm(2,e.getMessage());
             } catch (IOException e) {
+                //Ignore IOException
             }
 
             if (++currentLoop % fileList.size() ==0 && currentLoop<maxIter) {
               try {
-                    Thread.sleep((int)Math.random()*MAX_TIMEOUT);
+                    Thread.sleep((int)Math.random()*setting.MAX_TIMEOUT);
                   } catch (InterruptedException e) {}
             }
         }
     }
-
-
-    private String fileNameEncoding(String fileName) throws UnsupportedEncodingException {
-        return new String(fileName.getBytes(setting.getConsoleEncode()),setting.getFileEncode());
-    }
-
-    private String fileNameEncoding(long data) throws UnsupportedEncodingException {
-        return new String( Long.toString(data).getBytes(setting.getConsoleEncode()),setting.getFileEncode());
-    }
-
 
     /**Check and create name for output file and for ini file, write path into String @outputFileName and @iniFileName
      *
@@ -135,11 +122,12 @@ public class ArchiveProcess {
             String dateString = new String(dateFormat.format(date).getBytes("UTF-8"), setting.getConsoleEncode());
 
             int i = 0;
-            while (Files.exists(Paths.get(FileItem.getPath(setting.getOutputPath(),String.format(OUTPUT_FILE_NAME_FORMAT,dateString,i))))) {
+            while (Files.exists(Paths.get(FileItem.getPath(setting.getOutputPath(),String.format(setting.OUTPUT_FILE_NAME_FORMAT,dateString,i))))) {
                 i++;
             }
-            outputFile = new FileItem(setting.getInputPath(),setting.getOutputPath(),String.format(OUTPUT_FILE_NAME_FORMAT,dateString,i),false,null);
-            iniFile = new FileItem(setting.getInputPath(), setting.getOutputPath(),String.format(INI_FILE_NAME_FORMAT,dateString,i), false,null);
+            outputFile = new FileItem(setting.getOutputPath(),setting.getOutputPath()+String.format(setting.OUTPUT_FILE_NAME_FORMAT,dateString,i),false,null);
+            outputFile.setExitFile(true);
+            iniFile = new FileItem(setting.getOutputPath(),setting.getOutputPath()+String.format(setting.INI_FILE_NAME_FORMAT,dateString,i),false,null);
         } catch (UnsupportedEncodingException ex) {
             Archivist.exitProgramm(2,ex.getMessage());
         }

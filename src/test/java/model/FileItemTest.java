@@ -8,70 +8,78 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FileItemTest {
 
-    @Test
-    void getPath() {
-
-
-    }
+    private FileItem item1 = generateFileItem1();
+    private FileItem item2 = generateFileItem();
+    private FileItem item3 = generateFileItem();
 
     FileItem generateFileItem1() {
         String inputDirName = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/";
-        String outputDirName = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestOutput/";
         String filepath = "testFile.txt";
-        FileItem item = new FileItem(inputDirName,outputDirName,filepath,false,null);
+        FileItem item = new FileItem(inputDirName,inputDirName+filepath,false,null);
         return item;
     }
 
-    FileItem generateFileItem2() {
-        String inputDirName = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/";
-        String outputDirName = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestOutput/";
-        File file = new File("/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/testFile.txt");
-        FileItem item = new FileItem(inputDirName,outputDirName,file);
+    FileItem generateFileItem() {
+        FileItem item = new FileItem(new File("/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/testFile.txt"));
         return item;
-    }
-
-    FileItem generateFileItem3() {
-        String inputDirName = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/";
-        String outputDirName = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestOutput/";
-        File file = new File("/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/directory1/Test2.txt");
-        FileItem item = new FileItem(inputDirName,outputDirName,file);
-        return item;
-    }
-
-    FileItem generateFileItem4() {
-        String inputDirName = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/";
-        String outputDirName = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestOutput/";
-        String filepath = "directory1/Test2.txt";
-        FileItem item = new FileItem(inputDirName,outputDirName,filepath,false,null);
-        return item;
-    }
-
-
-    @Test
-    void getEndFileName() {
-        FileItem first = generateFileItem1();
-        FileItem third = generateFileItem3();
-        String firstString = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestOutput/testFile.txt";
-        String thirdString = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestOutput/directory1/Test2.txt";
-
-        assertTrue(first.getEndFileName().equals(firstString) && third.getEndFileName().equals(thirdString));
     }
 
     @Test
-    void getStartFileName() {
-        FileItem first = generateFileItem1();
-        FileItem third = generateFileItem3();
-        String firstString = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/testFile.txt";
-        String thirdString = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/directory1/Test2.txt";
-        assertTrue(first.getStartFileName().equals(firstString) && third.getStartFileName().equals(thirdString));
+    void testGetPath() {
+        String relativePath = "директория 1/Test3.txt";
+        String basePath = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/";
+        assertEquals(FileItem.getPath(basePath,relativePath), basePath+relativePath);
     }
 
     @Test
-    void testEquals() {
-        FileItem first = generateFileItem1();
-        FileItem second = generateFileItem2();
-        FileItem third = generateFileItem3();
-        FileItem fourth = generateFileItem4();
-        assertTrue(first.equals(second)&& third.equals(fourth));
+    void getDirectoryFromFile() {
+        File file = new File("/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/директория 1/Test3.txt");
+        String dir = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/директория 1/";
+        assertEquals(FileItem.getDirectoryFromFile(file),dir);
     }
+
+    @Test
+    void testGetDirectoryFromFile() {
+    }
+
+    @Test
+    void relativeFilePathFromFull() {
+        File file = new File("/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/директория 1/Test3.txt");
+        String relativePath = "директория 1/Test3.txt";
+        String basePath = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/";
+        assertEquals(FileItem.getRelativeFilePathFromFull(basePath,file),relativePath);
+    }
+
+    @Test
+    void testRelativeFilePathFromFull() {
+        assertEquals(item1.getFile(), item2.getFile());
+    }
+
+    @Test
+    void getFile() {
+        assertEquals(item1.getFile(), item2.getFile());
+    }
+
+    @Test
+    void getFullFileName() {
+        assertEquals(item1.getFullFileName(), item2.getFullFileName());
+    }
+
+    @Test
+    void isDirectory() {
+        assertEquals(item2.isDirectory(),false);
+    }
+
+    @Test
+    void getDirectoryName() {
+        String inputDirName = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput";
+        item3.setDirectoryName(inputDirName);
+        assertEquals(item3.getDirectoryName(),"/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/");
+    }
+
+    @Test
+    void getRelativeFilePath() {
+        assertEquals(item1, item2);
+    }
+
 }

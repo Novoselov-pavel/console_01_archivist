@@ -42,19 +42,14 @@ class IniClassTest {
 
     ArrayList<FileItem> createFileItem() {
         String inputDirName = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/";
-        String outputDirName = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestOutput/";
         ArrayList<FileItem> list = new ArrayList<>();
 
-        FileItem item = new FileItem(inputDirName,outputDirName,
-                                     new File("/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/тестовый файлик (1).txt"));
-        FileItem item2= new FileItem(inputDirName,outputDirName,
-                new File("/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/testFile2.txt"));
+        FileItem item = new FileItem(inputDirName, new File("/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/тестовый файлик (1).txt"));
+        FileItem item2= new FileItem(inputDirName, new File("/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/testFile2.txt"));
 
-        FileItem item3= new FileItem(inputDirName,outputDirName,
-                new File("/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/директория 1/Test3.txt"));
+        FileItem item3= new FileItem(inputDirName, new File("/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/директория 1/Test3.txt"));
 
-        FileItem item4= new FileItem(inputDirName,outputDirName,
-                new File("/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/директория 1/oops1/Test4.txt"));
+        FileItem item4= new FileItem(inputDirName,new File("/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/директория 1/oops1/Test4.txt"));
 
         item.setCrc32("102051");
         item2.setCrc32("10500");
@@ -69,10 +64,9 @@ class IniClassTest {
     }
 
     FileItem createIniFileItem() {
-        String inputDirName = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestInput/";
         String outputDirName = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestOutput/";
         String filepath = "iniFile.ini";
-        FileItem item = new FileItem(inputDirName,outputDirName,filepath,false,null);
+        FileItem item = new FileItem(new File(outputDirName+filepath));
         return item;
     }
 }

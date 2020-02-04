@@ -2,6 +2,7 @@ package model;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class FileItem implements Serializable {
@@ -44,6 +45,23 @@ public class FileItem implements Serializable {
         return retValue;
     }
 
+    public static ArrayList<FileItem> getFileItemArrayListListFromFile (File file, ArrayList<FileItem> list, String basePath) {
+        if (list == null)
+            list = new ArrayList<>();
+
+        if (basePath==null || basePath.isBlank())
+            basePath = getDirectoryFromFile(file);
+
+        File[] files = file.listFiles();
+        for (File f: files) {
+            list.add(new FileItem(basePath,f));
+            if (f.isDirectory()) {
+                getFileItemArrayListListFromFile(f,list,basePath);
+            }
+        }
+        return list;
+    }
+
 
     public FileItem(String basePath, String fullPath, boolean isDirectory, String crc32) {
         this.directoryName = basePath;
@@ -77,7 +95,13 @@ public class FileItem implements Serializable {
         this.relativeFilePath = getRelativeFilePathFromFull(directoryName,inputFile);
 
     }
+    public String getCrc32() {
+        return crc32;
+    }
 
+    public String getDirectoryName() {
+        return directoryName;
+    }
 
     public File getFile() {
         return new File(getFullFileName());
@@ -87,6 +111,13 @@ public class FileItem implements Serializable {
         return getPath(directoryName,relativeFilePath);
     }
 
+    public String getRelativeFilePath() {
+        return relativeFilePath;
+    }
+
+    public boolean isExitFile() {
+        return isExitFile;
+    }
 
     public boolean isDirectory() {
         return isDirectory;
@@ -96,24 +127,12 @@ public class FileItem implements Serializable {
         this.crc32 = crc32;
     }
 
-    public boolean isExitFile() {
-        return isExitFile;
-    }
-
     public void setExitFile(boolean exitFile) {
         isExitFile = exitFile;
     }
 
-    public String getDirectoryName() {
-        return directoryName;
-    }
-
     public void setDirectoryName(String directoryName) {
         this.directoryName = checkAndReturnDirectoryPath(directoryName,true);
-    }
-
-    public String getRelativeFilePath() {
-        return relativeFilePath;
     }
 
     @Override

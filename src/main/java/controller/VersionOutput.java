@@ -2,10 +2,12 @@ package controller;
 
 import gui.Archivist;
 
-public class VersionOutput {
+public class VersionOutput implements ProcessInterface {
 
-    public static void write () {
+    @Override
+    public boolean write () {
         System.out.println(Archivist.getVersionID());
+        return true;
     }
 
 }

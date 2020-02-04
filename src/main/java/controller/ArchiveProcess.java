@@ -1,15 +1,26 @@
 package controller;
 
 import gui.Archivist;
+import model.FileItem;
+import model.IniClass;
 import model.Settings;
+import org.apache.tools.zip.Zip64Mode;
+import org.apache.tools.zip.ZipEntry;
+import org.apache.tools.zip.ZipOutputStream;
 
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 
-public class ArchiveProcess {
+
+public class ArchiveProcess implements ProcessInterface {
     private final Settings setting;
     private FileItem outputFile;
     private FileItem iniFile;
@@ -36,7 +47,7 @@ public class ArchiveProcess {
             zipOut.setEncoding(setting.getConsoleEncode());
             zipOut.setUseZip64(Zip64Mode.Always);
             File fileSource = new File(setting.getInputPath());
-            fillFileList(fileSource);
+            fileList = FileItem.getFileItemArrayListListFromFile(fileSource,fileList,setting.getInputPath());
             writeFileListToZIP(zipOut);
         } catch (FileNotFoundException ex) {
             Archivist.exitProgramm(2,ex.getMessage());
@@ -57,15 +68,6 @@ public class ArchiveProcess {
         return true;
     }
 
-    private void fillFileList(File fileSource) {
-        File[] files = fileSource.listFiles();
-        for (File file : files) {
-            fileList.add(new FileItem(setting.getInputPath(),file));
-            if (file.isDirectory()) {
-                fillFileList(file);
-            }
-        }
-    }
 
     private void writeFileListToZIP(ZipOutputStream stream) {
         ArrayList<FileItem> task = new ArrayList<>(fileList);
@@ -132,6 +134,8 @@ public class ArchiveProcess {
             Archivist.exitProgramm(2,ex.getMessage());
         }
     }
+
+
 
     private void checkInputPath (Path sourcePath) {
         try {

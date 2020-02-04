@@ -1,9 +1,11 @@
 package model;
 
+import gui.GetInfoInterface;
+
 /**Strings displayed for option -h or --help in command line
  *
  */
-public class  Help {
+public class  Help implements GetInfoInterface {
     private static String[] help = {"Usage: Archivist.class [OPTION] [source] [destination]",
                             "Archive/dearchive  all files and all dir from [source] to zip file + manifest with MD5.",
                             "OPTION can contain next option separated by space.",
@@ -15,11 +17,9 @@ public class  Help {
                             "-v,   --version              display version information and exit"
                             };
 
-    /**Return help information in String[]
-     *
-     * @return
-     */
-    public static String[] getHelp() {
+
+    @Override
+    public String[] getInfo() {
         return help;
     }
 }

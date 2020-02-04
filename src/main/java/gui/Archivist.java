@@ -5,7 +5,7 @@ import model.Settings;
 /**Main class
  *
  */
-public class Archivist {
+public class Archivist implements ExitProgramInterface, GetInfoInterface {
 
     private static String versionID = "Archivist version 0.1\n Copyright(c) 2020 by Novoselov Pavel.\n"+
                                       "License GPLv3+: GNU GPL version 3 or later\n"+
@@ -18,11 +18,6 @@ public class Archivist {
 
     }
 
-
-    public static String getVersionID() {
-        return versionID;
-    }
-
     public static void exitProgramm(int status, String message) {
         if (message!=null)
             System.out.println(message);
@@ -31,5 +26,24 @@ public class Archivist {
 
     public static Settings getSettings() {
         return settings;
+    }
+
+    @Override
+    public void exitProgram(int status, Exception e, String outMessage) {
+        if (outMessage!=null) {
+            System.out.println(outMessage);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) { }
+            System.err.println(e.getStackTrace());
+        }
+    }
+
+
+    @Override
+    public String[] getInfo() {
+        String[] strings = new String[1];
+        strings[0] = versionID;
+        return strings;
     }
 }

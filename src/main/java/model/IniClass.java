@@ -41,6 +41,10 @@ public class IniClass implements Serializable {
         return itemList;
     }
 
+    public FileItem getIniFileItem() {
+        return iniFileItem;
+    }
+
     private void storeToFile(OutputStream out) throws IOException {
         ObjectOutputStream stream = new ObjectOutputStream(out);
         stream.writeObject(this);

@@ -1,16 +1,22 @@
 package controller;
 
 import gui.Archivist;
+import gui.ExitProgramInterface;
 import model.FileItem;
 import model.IniClass;
 import model.Settings;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
-public class DeArchiveProcess {
+public class DeArchiveProcess implements ProcessInterface {
     private Settings settings = Archivist.getSettings();
     private IniClass iniClass;
+    private ExitProgramInterface exitProgramInterface = new FabricaController().getExitProgramInterface();
+
 
     public DeArchiveProcess() {
         load();
@@ -22,19 +28,31 @@ public class DeArchiveProcess {
     }
 
     private void load() {
-//        IniFileItem fileItem = new IniFileItem(settings.getInputPath());  // TODO need check
-//        iniClass = new IniClass(null,fileItem);
-//        iniClass.loadFromFile();
+        FileItem fileItem = new FileItem(new File(settings.getInputPath()));
+        iniClass = new IniClass(null,fileItem);
+        iniClass.loadFromFile();
     }
 
     public boolean write() {
-//        String
-//
-//        List<FileItem> itemList = iniClass.getItemList();
-//        FileItem zip = searchZIP(itemList);
-//        zip.getEndFile();
-//
-//        //TODO
+        String inputPath = iniClass.getIniFileItem().getDirectoryName();
+        String outputPath = settings.getOutputPath();
+        String outputTempPath = outputTempPath(settings.getOutputPath());
+        FileItem zipFile = searchZIP(iniClass.getItemList());
+
+        zipFile.setDirectoryName(inputPath);
+        GetCrc32 zipCrc= new GetCrc32();
+        try {
+            zipCrc.update(zipFile.getFile());
+        } catch (IOException e) {
+            exitProgramInterface.exitProgram(2,e,"Zip File doesn't exist");
+        }
+        if (!zipFile.getCrc32().equals(zipCrc.getValue())) {
+            exitProgramInterface.exitProgram(2, new IllegalArgumentException(),"Zip File's CRC32 does not valid");
+        }
+
+
+
+        //TODO
         return false;
     }
 
@@ -44,6 +62,16 @@ public class DeArchiveProcess {
         }
         return null;
     }
+
+    private String outputTempPath (String outputPath) {
+        int i = 0;
+        String pathFormat = outputPath+"temp%d/";
+        while (Files.exists(Paths.get(String.format(pathFormat,i)))) {
+            i++;
+        }
+        return String.format(pathFormat,i);
+    }
+
 
 }
 

@@ -35,8 +35,10 @@ public class Archivist implements ExitProgramInterface, GetInfoInterface {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) { }
-            System.err.println(e.getStackTrace());
         }
+        if (e!=null)
+            System.err.println(e.getStackTrace());
+        System.exit(status);
     }
 
 

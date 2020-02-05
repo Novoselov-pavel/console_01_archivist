@@ -62,7 +62,6 @@ public class FileItem implements Serializable {
         return list;
     }
 
-
     public FileItem(String basePath, String fullPath, boolean isDirectory, String crc32) {
         this.directoryName = basePath;
         this.relativeFilePath = getRelativeFilePathFromFull(basePath,fullPath,isDirectory);
@@ -163,15 +162,5 @@ public class FileItem implements Serializable {
             return path;
 
     }
-
-
-
-
-
-
-
-
-
-
 
 }

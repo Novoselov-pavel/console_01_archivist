@@ -1,5 +1,7 @@
-package controller;
+package controller.interfacesImplementation;
 
+import controller.GetCrc32;
+import controller.interfaces.ProcessInterface;
 import gui.Archivist;
 import model.FileItem;
 import model.IniClass;

@@ -1,12 +1,11 @@
 package controller;
 
+import controller.interfacesImplementation.DeArchiveProcess;
 import exception.InvalidBashOption;
 import model.Settings;
 import org.junit.jupiter.api.Test;
 
 import java.io.UnsupportedEncodingException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class DeArchiveProcessTest {
 

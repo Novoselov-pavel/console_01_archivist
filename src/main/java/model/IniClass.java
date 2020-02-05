@@ -1,11 +1,9 @@
 package model;
 
-import controller.GetCrc32;
 import gui.Archivist;
 
 import java.io.*;
 import java.util.List;
-import java.util.TreeMap;
 
 public class IniClass implements Serializable {
     private static final long serialVersionUID = 202001251002L;
@@ -43,6 +41,20 @@ public class IniClass implements Serializable {
 
     public FileItem getIniFileItem() {
         return iniFileItem;
+    }
+
+    public FileItem getFileItemFromList(String relativeFilePath) {
+        for (FileItem item : itemList) {
+            if (item.getRelativeFilePath().equals(relativeFilePath))
+                return item;
+        }
+        return null;
+    }
+
+    public boolean checkCRC(String relativeFilePath, String crc) {
+        FileItem item = getFileItemFromList(relativeFilePath);
+        if (item==null) return false;
+        return item.getCrc32().equals(crc);
     }
 
     private void storeToFile(OutputStream out) throws IOException {

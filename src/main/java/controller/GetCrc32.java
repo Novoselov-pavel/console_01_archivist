@@ -6,7 +6,7 @@ import java.util.zip.CRC32;
 
 public class GetCrc32 {
     private final int BUFFER_SIZE = 8192;
-    private final String DIR_CRC = "DIR";
+    public static final String DIR_CRC = "DIR";
     private String returnCrc32="";
     private CRC32 crc32 = new CRC32();
 

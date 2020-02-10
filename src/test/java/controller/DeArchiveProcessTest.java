@@ -11,10 +11,9 @@ class DeArchiveProcessTest {
 
     @Test
     void write() throws UnsupportedEncodingException, InvalidBashOption {
-
         String[] input3= new String[3];
         input3[0] = "-d";
-        input3[1] = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestOutput/202002051_prop.ini";
+        input3[1] = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestOutput/202002100_prop.ini";
         input3[2] = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/Test2/";
 
         BashOptionRead bashOptionRead1 = new BashOptionRead(input3);

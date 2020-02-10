@@ -2,6 +2,8 @@ package model;
 
 import java.io.File;
 import java.io.Serializable;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -94,6 +96,8 @@ public class FileItem implements Serializable {
         this.relativeFilePath = getRelativeFilePathFromFull(directoryName,inputFile);
 
     }
+
+
     public String getCrc32() {
         return crc32;
     }
@@ -108,6 +112,10 @@ public class FileItem implements Serializable {
 
     public String getFullFileName () {
         return getPath(directoryName,relativeFilePath);
+    }
+
+    public Path getPath() {
+        return  Paths.get(getFullFileName());
     }
 
     public String getRelativeFilePath() {

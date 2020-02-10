@@ -64,14 +64,20 @@ public class DeArchiveProcess implements ProcessInterface {
             Enumeration<ZipEntry> entries = zipFile.getEntries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                fileInterface.createAllPathDirectory(outputPath+entry.getName());
+                fileInterface.createAllPathDirectory(outputTempPath+entry.getName());
 
+                if (isDirectory(entry.getName())) continue;
 
-                try (FileOutputStream outputStream  = new FileOutputStream(outputPath+entry.getName());
+                try (FileOutputStream outputStream  = new FileOutputStream(outputTempPath+entry.getName());
                      InputStream stream = zipFile.getInputStream(entry)) {
                     String crc = fileInterface.writeStreamAndReturnCRC(stream, outputStream);
                     if (!iniClass.checkCRC(entry.getName(),crc))
                         throw  new Exception(String.format("File %s have wrong CRC",entry.getName()));
+//                        System.out.println(String.format("File %s crc from Ini %s crc from FileIntreface %s", entry.getName(), iniClass.getFileItemFromList(entry.getName()).getCrc32(), crc));
+//                        GetCrc32 crc32 = new GetCrc32();
+//                        crc32.update(outputTempPath+entry.getName());
+//                        System.out.println(crc32.getValue());
+                    // TODO
                 } catch (Exception e) {
                     exitProgramInterface.exitProgram(2,e,"File dearchiving problem. Perhaps wrong archive");
                 }
@@ -79,12 +85,8 @@ public class DeArchiveProcess implements ProcessInterface {
         } catch (Exception e) {
             exitProgramInterface.exitProgram(2,e,null);
         }
-
-
-
-
-        //TODO
-        return false;
+        fileInterface.copyFromInputDirectoryToDestination(outputTempPath,outputPath,true);
+        return true;
     }
 
     private FileItem searchZIP(List<FileItem> list) {
@@ -103,6 +105,9 @@ public class DeArchiveProcess implements ProcessInterface {
         return String.format(pathFormat,i);
     }
 
+    private boolean isDirectory(String path) {
+        return path.endsWith("/");
+    }
 
 }
 

@@ -1,5 +1,7 @@
 package gui;
 
+import controller.interfaces.FabricControllerInterface;
+import controller.interfacesImplementation.FabricController;
 import model.Settings;
 
 /**Main class
@@ -15,7 +17,9 @@ public class Archivist implements ExitProgramInterface, GetInfoInterface {
     private static Settings settings= null;
 
     public static void main(String[] args) {
-
+        FabricControllerInterface controllerInterface = new FabricController();
+        settings = controllerInterface.getSettings(args);
+        controllerInterface.workFormSetting(settings);
     }
 
     public static void exitProgramm(int status, String message) {
@@ -37,7 +41,7 @@ public class Archivist implements ExitProgramInterface, GetInfoInterface {
             } catch (InterruptedException ex) { }
         }
         if (e!=null)
-            System.err.println(e.getStackTrace());
+            e.printStackTrace(System.err);
         System.exit(status);
     }
 

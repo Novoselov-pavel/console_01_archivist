@@ -1,10 +1,12 @@
 package controller;
 
+import controller.interfaces.Crc32Interface;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.zip.CRC32;
 
-public class GetCrc32 {
+public class GetCrc32 implements Crc32Interface {
     private final int BUFFER_SIZE = 8192;
     public static final String DIR_CRC = "DIR";
     private String returnCrc32="";

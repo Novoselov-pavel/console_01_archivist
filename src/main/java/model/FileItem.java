@@ -47,22 +47,7 @@ public class FileItem implements Serializable {
         return retValue;
     }
 
-    public static ArrayList<FileItem> getFileItemArrayListListFromFile (File file, ArrayList<FileItem> list, String basePath) {
-        if (list == null)
-            list = new ArrayList<>();
 
-        if (basePath==null || basePath.isBlank())
-            basePath = getDirectoryFromFile(file);
-
-        File[] files = file.listFiles();
-        for (File f: files) {
-            list.add(new FileItem(basePath,f));
-            if (f.isDirectory()) {
-                getFileItemArrayListListFromFile(f,list,basePath);
-            }
-        }
-        return list;
-    }
 
     public FileItem(String basePath, String fullPath, boolean isDirectory, String crc32) {
         this.directoryName = basePath;

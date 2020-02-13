@@ -3,14 +3,13 @@ package model;
 import exception.InvalidBashOption;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Objects;
 
 /**Class for storage and check Bash option
  *
  */
-public class Settings {
+public class Settings implements SettingInterface {
     private LinkedList<BashOption> options;
     private String inputPath;
     private String outputPath;

@@ -43,5 +43,5 @@ public interface FileInterface {
      * @param basePath path for calculation FileItem.getRelativeFilePath(); If it is null, file Directory is used as basePath
      * @return List<FileItem>
      */
-     List<FileItem> getFileItemArrayListListFromFile (File file, java.util.List<FileItem> list, String basePath);
+     List<FileItem> getFileItemArrayListFromFile(File file, java.util.List<FileItem> list, String basePath);
 }

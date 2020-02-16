@@ -34,7 +34,7 @@ public class FileProcess implements FileInterface {
      * @param basePath path for calculation FileItem.getRelativeFilePath(); If it is null, file Directory is used as basePath
      * @return List<FileItem>
      */
-    public List<FileItem> getFileItemArrayListListFromFile (File file, List<FileItem> list, String basePath) {
+    public List<FileItem> getFileItemArrayListFromFile(File file, List<FileItem> list, String basePath) {
         if (!file.isDirectory()) return list;
 
         if (list == null)
@@ -65,7 +65,7 @@ public class FileProcess implements FileInterface {
         if (!file.exists() || !file.isDirectory()) {
             createAllPathDirectory(inputPath);
         }
-        ArrayList<FileItem> list = FileItem.getFileItemArrayListListFromFile(file,null, inputPath);
+        List<FileItem> list = getFileItemArrayListFromFile(file,null, inputPath);
         ArrayList<FileItem> workList = new ArrayList<>(list);
 
         Iterator<FileItem> iterator = workList.iterator();
@@ -79,7 +79,7 @@ public class FileProcess implements FileInterface {
                         Files.copy(currentFileItem.getPath(), Paths.get(destinationPath + currentFileItem.getRelativeFilePath()), StandardCopyOption.REPLACE_EXISTING);
                         iterator.remove();
                     } catch (IOException ex) {
-                        //TODO in Future
+                        loggerInterface.writeErrorMessage(ex,ex.getMessage());
                     }
             }
             else {
@@ -88,14 +88,14 @@ public class FileProcess implements FileInterface {
                     Files.copy(currentFileItem.getPath(), Paths.get(destinationPath + currentFileItem.getRelativeFilePath()));
                     iterator.remove();
                 } catch (IOException ex) {
-                    //TODO in Future
+                    loggerInterface.writeErrorMessage(ex,ex.getMessage());
                 }
             }
         }
         try {
             Files.walkFileTree(Paths.get(inputPath), new FileVisitorDelete());
         } catch (Exception ex) {
-            //TODO in Future
+            loggerInterface.writeErrorMessage(ex,ex.getMessage());
         }
 
     }

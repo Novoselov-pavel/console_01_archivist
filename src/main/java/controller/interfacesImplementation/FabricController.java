@@ -99,7 +99,7 @@ public class FabricController implements FabricControllerInterface {
         if (settings.getOptions().contains(BashOption.HELP) || settings.getOptions().contains(BashOption.VERSION))
             return new InfoOutput(getInfoInterface());
         else if (settings.getOptions().contains(BashOption.DEARCHIVE))
-            return new DeArchiveProcess();
+            return new DeArchiveProcess(this);
         else if (settings.getOptions().contains(BashOption.ARCHIVE))
             return new ArchiveProcess(this);
         return null;

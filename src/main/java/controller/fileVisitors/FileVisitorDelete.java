@@ -24,7 +24,6 @@ public class FileVisitorDelete extends SimpleFileVisitor<Path> {
             Files.delete(dir);
             return FileVisitResult.CONTINUE;
         } else {
-            //TODO later
             throw exc;
         }
 

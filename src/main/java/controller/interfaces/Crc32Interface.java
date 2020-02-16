@@ -1,5 +1,6 @@
 package controller.interfaces;
 
+import java.io.File;
 import java.io.IOException;
 
 public interface Crc32Interface {
@@ -28,4 +29,16 @@ public interface Crc32Interface {
      * @throws IOException
      */
      void update (String fileName) throws IOException;
+
+    /**
+     * Resets CRC-32 to initial value.
+     */
+     void reset();
+
+    /**Updates the CRC-32 checksum with the specified file.
+     *
+     * @param file
+     * @throws IOException
+     */
+    void update (File file) throws IOException;
 }

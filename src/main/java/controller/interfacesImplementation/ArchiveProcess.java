@@ -3,8 +3,10 @@ package controller.interfacesImplementation;
 import controller.interfaces.Crc32Interface;
 import controller.interfaces.FabricControllerInterface;
 import controller.interfaces.ProcessInterface;
+import gui.LoggerInterface;
 import model.FileItem;
 import model.IniClass;
+import model.LoggerMessages;
 import model.SettingInterface;
 import org.apache.tools.zip.Zip64Mode;
 import org.apache.tools.zip.ZipEntry;
@@ -18,10 +20,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-
+/**Archived files and writing Ini File
+ *
+ */
 public class ArchiveProcess implements ProcessInterface {
     private final FabricControllerInterface fabric;
     private final SettingInterface setting;
+    private final LoggerInterface logger;
     private FileItem outputFile;
     private FileItem iniFile;
     private List<FileItem> fileList = new ArrayList<>();
@@ -29,17 +34,22 @@ public class ArchiveProcess implements ProcessInterface {
     public ArchiveProcess(FabricControllerInterface fabric) {
         this.fabric = fabric;
         this.setting = fabric.getSettings();
+        this.logger = fabric.getLoggerInterface();
         getOutputFiles();
     }
 
-
+    /**Archive files
+     *
+     * @return
+     */
     public boolean write() {
         try(FileOutputStream stream = new FileOutputStream(outputFile.getFullFileName());
             ZipOutputStream zipOut = new ZipOutputStream(stream)) {
             zipOut.setEncoding(setting.getConsoleEncode());
             zipOut.setUseZip64(Zip64Mode.Always);
             File fileSource = new File(setting.getInputPath());
-            fileList = fabric.getFileInterface().getFileItemArrayListListFromFile(fileSource,fileList,setting.getInputPath());
+            logger.writeLogger(String.format(LoggerMessages.BEGIN_PACK.getFormatter(),fileSource.getName()));
+            fileList = fabric.getFileInterface().getFileItemArrayListFromFile(fileSource,fileList,setting.getInputPath());
             writeFileListToZIP(zipOut);
         } catch (FileNotFoundException ex) {
             fabric.getExitProgramInterface().exitProgram(2,ex, ex.getMessage());
@@ -54,13 +64,18 @@ public class ArchiveProcess implements ProcessInterface {
         } catch (IOException ex) {
             fabric.getExitProgramInterface().exitProgram(2,ex, ex.getMessage());
         }
+        logger.writeLogger(String.format(LoggerMessages.WRITE_INI_FILE.getFormatter(),iniFile.getRelativeFilePath()));
         fileList.add(outputFile);
         IniClass iniClass = new IniClass(fileList,iniFile);
         iniClass.storeToFile();
+        logger.writeLogger(String.format(LoggerMessages.END_PACK.getFormatter(),setting.getInputPath()));
         return true;
     }
 
-
+    /** Write fileList into ZipOutputStream stream
+     *
+     * @param stream
+     */
     private void writeFileListToZIP(ZipOutputStream stream) {
         ArrayList<FileItem> task = new ArrayList<>(fileList);
         Iterator<FileItem> iterator = task.iterator();
@@ -68,6 +83,7 @@ public class ArchiveProcess implements ProcessInterface {
         int maxIter = setting.getMAX_ITERATION()*fileList.size();
         while (iterator.hasNext()) {
             FileItem fileItem = iterator.next();
+            logger.writeLogger(String.format(LoggerMessages.BEGIN_PACK.getFormatter(),fileItem.getRelativeFilePath()));
             try {
                 ZipEntry entry = new ZipEntry(fileItem.getRelativeFilePath());
                 stream.putNextEntry(entry);
@@ -75,11 +91,13 @@ public class ArchiveProcess implements ProcessInterface {
                     try (FileInputStream fileInputStream = new FileInputStream(fileItem.getFullFileName())) {
                         String crc32 = fabric.getFileInterface().writeStreamAndReturnCRC(fileInputStream,stream);
                         fileItem.setCrc32(crc32);
+                        logger.writeLogger(String.format(LoggerMessages.END_PACK.getFormatter(),fileItem.getRelativeFilePath()));
                         iterator.remove();
                     } catch (IOException ignored) {
                         //Ignore exception
                     }
                 } else {
+                    logger.writeLogger(String.format(LoggerMessages.END_PACK.getFormatter(),fileItem.getRelativeFilePath()));
                     iterator.remove();
                 }
             } catch (IOException ignored) {

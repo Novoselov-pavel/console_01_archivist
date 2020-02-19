@@ -35,7 +35,7 @@ public class BashOptionRead {
         }
         inputPath = queue.pollFirst();
         outputPath = queue.pollFirst();
-        Settings settings = new Settings(options,inputPath,outputPath);
+        Settings settings = new Settings(options, inputPath, outputPath);
         return settings;
     }
 

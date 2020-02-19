@@ -95,7 +95,7 @@ public class GetCrc32 implements Crc32Interface {
      * Returns CRC-32 value.
      */
     public String getValue() {
-        if (returnCrc32.isBlank()) {
+        if (returnCrc32==null || returnCrc32.isEmpty()) {
             return Long.toString(crc32.getValue());
         } else {
             return returnCrc32;

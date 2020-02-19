@@ -87,7 +87,8 @@ public class FabricController implements FabricControllerInterface {
         try {
             return new BashOptionRead(args).getSettings();
         } catch (InvalidBashOption invalidBashOption) {
-            getExitProgramInterface().exitProgram(2,invalidBashOption,"Invalid command line option");
+            getExitProgramInterface().exitProgram(2,null,
+                    String.format("Invalid command line option, use %s or %s", BashOption.HELP.getStringOption()[0], BashOption.HELP.getStringOption()[1]));
             return null;
         } catch (UnsupportedEncodingException e) {
             getExitProgramInterface().exitProgram(2,e,"Unsupported Encoding");

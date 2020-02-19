@@ -77,6 +77,12 @@ public class Message implements ExitProgramInterface, LoggerInterface {
         }
         if (e!=null)
             e.printStackTrace(errWriter);
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ex) {
+
+        }
     }
 
     /**

@@ -55,8 +55,10 @@ public class FileVisitorAddFileItemToList extends SimpleFileVisitor<Path> {
      */
     @Override
     public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-        FileItem fileItem = new FileItem(basePath,dir.toFile());
-        list.add(fileItem);
+        if (!basePath.equals(dir.toString()) && !modBasePath().equals(dir.toString())) {
+            FileItem fileItem = new FileItem(basePath,dir.toFile());
+            list.add(fileItem);
+        }
         return FileVisitResult.CONTINUE;
     }
 
@@ -66,5 +68,12 @@ public class FileVisitorAddFileItemToList extends SimpleFileVisitor<Path> {
      */
     public List<FileItem> getList() {
         return list;
+    }
+
+    private String modBasePath() {
+        if (basePath.endsWith("/"))
+            return basePath.substring(0,basePath.lastIndexOf("/"));
+        else
+            return basePath + "/";
     }
 }

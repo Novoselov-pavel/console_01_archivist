@@ -2,8 +2,6 @@ package gui;
 
 import controller.interfaces.FabricControllerInterface;
 import controller.interfacesImplementation.FabricController;
-import model.SettingInterface;
-import model.Settings;
 
 /**Main class
  *
@@ -18,6 +16,7 @@ public class Archivist implements GetInfoInterface {
 
     public static void main(String[] args) {
         FabricControllerInterface controllerInterface = new FabricController(args);
+        controllerInterface.workFormSetting();
     }
 
     @Override

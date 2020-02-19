@@ -18,20 +18,15 @@ public class IniClass implements Serializable {
         this.iniFileItem = iniFileItem;
     }
 
-    public void storeToFile() {
+    public void storeToFile() throws IOException {
         try(FileOutputStream stream = new FileOutputStream(iniFileItem.getFullFileName())) {
             storeToFile(stream);
-
-        } catch (IOException e) {
-            Archivist.exitProgramm(2, e.getMessage());
         }
     }
 
-    public void loadFromFile() {
+    public void loadFromFile() throws IOException, ClassNotFoundException {
         try(FileInputStream stream = new FileInputStream(iniFileItem.getFullFileName())) {
             loadFromFile(stream);
-        } catch (IOException | ClassNotFoundException e) {
-            Archivist.exitProgramm(2, e.getMessage());
         }
     }
 

@@ -3,6 +3,7 @@ package model;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,7 +15,11 @@ class IniClassTest {
         FileItem iniFileItem = createIniFileItem();
         ArrayList<FileItem> files = createFileItem();
         IniClass iniClass = new IniClass(files,iniFileItem);
-        iniClass.storeToFile();
+        try {
+            iniClass.storeToFile();
+        } catch (IOException e) {
+            fail();
+        }
         assertTrue(true);
     }
 
@@ -23,7 +28,11 @@ class IniClassTest {
         ArrayList<FileItem> files = new ArrayList<>();
         FileItem iniFileItem = createIniFileItem();
         IniClass iniClass = new IniClass(null,iniFileItem);
-        iniClass.loadFromFile();
+        try {
+            iniClass.loadFromFile();
+        } catch (Exception e) {
+            fail();
+        }
         assertTrue(true);
     }
 
@@ -32,10 +41,18 @@ class IniClassTest {
         FileItem iniFileItem = createIniFileItem();
         ArrayList<FileItem> files = createFileItem();
         IniClass iniClass = new IniClass(files,iniFileItem);
-        iniClass.storeToFile();
+        try {
+            iniClass.storeToFile();
+        } catch (IOException e) {
+           fail();
+        }
 
         IniClass iniClassLoad = new IniClass(null,iniFileItem);
-        iniClassLoad.loadFromFile();
+        try {
+            iniClassLoad.loadFromFile();
+        } catch (Exception e) {
+            fail();
+        }
         assertTrue(iniClass.getItemList().equals(iniClassLoad.getItemList()));
     }
 

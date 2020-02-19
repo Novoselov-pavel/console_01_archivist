@@ -47,7 +47,12 @@ public class DeArchiveProcess implements ProcessInterface {
         logger.writeLogger(String.format(LoggerMessages.READ_INI_FILE.getFormatter(),settings.getInputPath()));
         FileItem fileItem = new FileItem(new File(settings.getInputPath()));
         iniClass = new IniClass(null,fileItem);
-        iniClass.loadFromFile();
+        try {
+            iniClass.loadFromFile();
+        } catch (IOException | ClassNotFoundException e) {
+            exitProgramInterface.exitProgram(2, e, e.getMessage());
+        }
+
     }
 
     public boolean write() {

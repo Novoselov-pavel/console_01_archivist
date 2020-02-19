@@ -12,9 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -40,7 +38,7 @@ public class FileProcess implements FileInterface {
         if (list == null)
             list = new ArrayList<>();
 
-        if (basePath==null || basePath.isBlank())
+        if (basePath==null || basePath.isEmpty())
             basePath = getDirectoryPath(file.getPath());
         else {
             if (!checkBasePath(file,basePath)) {
@@ -71,13 +69,13 @@ public class FileProcess implements FileInterface {
         Iterator<FileItem> iterator = workList.iterator();
         while (iterator.hasNext()) {
             FileItem currentFileItem = iterator.next();
-
             File destinationFile = new File(destinationPath+currentFileItem.getRelativeFilePath());
             if (destinationFile.exists()) {
                 if (overwrite)
                     try {
                         Files.copy(currentFileItem.getPath(), Paths.get(destinationPath + currentFileItem.getRelativeFilePath()), StandardCopyOption.REPLACE_EXISTING);
                         iterator.remove();
+                    } catch (DirectoryNotEmptyException | FileAlreadyExistsException ex) {
                     } catch (IOException ex) {
                         loggerInterface.writeErrorMessage(ex,ex.getMessage());
                     }
@@ -87,6 +85,7 @@ public class FileProcess implements FileInterface {
                 try {
                     Files.copy(currentFileItem.getPath(), Paths.get(destinationPath + currentFileItem.getRelativeFilePath()));
                     iterator.remove();
+                } catch (DirectoryNotEmptyException | FileAlreadyExistsException ex) {
                 } catch (IOException ex) {
                     loggerInterface.writeErrorMessage(ex,ex.getMessage());
                 }
@@ -112,10 +111,10 @@ public class FileProcess implements FileInterface {
     public String getFreeFileName(String fileNameFormat, String firstPartFileName, String directoryPath) {
         String checkDirPath = getDirectoryPath(directoryPath);
         int i = 0;
-        while (new File(checkDirPath+String.format(fileNameFormat,fileNameFormat,i)).exists()) {
+        while (new File(checkDirPath+String.format(fileNameFormat,firstPartFileName,i)).exists()) {
             i++;
         }
-        return checkDirPath+String.format(fileNameFormat,fileNameFormat,i);
+        return checkDirPath+String.format(fileNameFormat,firstPartFileName,i);
     }
 
     /**
@@ -130,7 +129,7 @@ public class FileProcess implements FileInterface {
      */
     @Override
     public String getDirectoryPath(String path) {
-        if (path == null || path.isBlank()) return path;
+        if (path == null || path.isEmpty()) return path;
         if (path.endsWith("/")) return path;
 
         return path+"/";

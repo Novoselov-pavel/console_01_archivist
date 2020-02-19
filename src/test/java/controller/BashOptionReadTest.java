@@ -69,9 +69,7 @@ class BashOptionReadTest {
 
             assertTrue(check1&check2&check3);
 
-        } catch (InvalidBashOption ex) {
-            fail();
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception ex) {
             fail();
         }
 

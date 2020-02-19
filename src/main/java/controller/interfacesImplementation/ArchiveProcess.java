@@ -14,6 +14,9 @@ import org.apache.tools.zip.ZipOutputStream;
 
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,6 +46,15 @@ public class ArchiveProcess implements ProcessInterface {
      * @return
      */
     public boolean write() {
+        Path path = Paths.get(outputFile.getFullFileName());
+        if (!Files.exists(path.getParent())) {
+            try {
+                Files.createDirectories(path.getParent());
+            } catch (IOException e) {
+                fabric.getExitProgramInterface().exitProgram(2,e,e.getMessage());
+            }
+        }
+
         try(FileOutputStream stream = new FileOutputStream(outputFile.getFullFileName());
             ZipOutputStream zipOut = new ZipOutputStream(stream)) {
             zipOut.setEncoding(setting.getConsoleEncode());
@@ -51,8 +63,6 @@ public class ArchiveProcess implements ProcessInterface {
             logger.writeLogger(String.format(LoggerMessages.BEGIN_PACK.getFormatter(),fileSource.getName()));
             fileList = fabric.getFileInterface().getFileItemArrayListFromFile(fileSource,fileList,setting.getInputPath());
             writeFileListToZIP(zipOut);
-        } catch (FileNotFoundException ex) {
-            fabric.getExitProgramInterface().exitProgram(2,ex, ex.getMessage());
         } catch (IOException ex) {
             fabric.getExitProgramInterface().exitProgram(2,ex, ex.getMessage());
         }
@@ -61,13 +71,18 @@ public class ArchiveProcess implements ProcessInterface {
         try {
             zipCRC.update(outputFile.getFullFileName());
             outputFile.setCrc32(zipCRC.getValue());
+            outputFile.setExitFile(true);
         } catch (IOException ex) {
             fabric.getExitProgramInterface().exitProgram(2,ex, ex.getMessage());
         }
         logger.writeLogger(String.format(LoggerMessages.WRITE_INI_FILE.getFormatter(),iniFile.getRelativeFilePath()));
         fileList.add(outputFile);
         IniClass iniClass = new IniClass(fileList,iniFile);
-        iniClass.storeToFile();
+        try {
+            iniClass.storeToFile();
+        } catch (IOException e) {
+            fabric.getExitProgramInterface().exitProgram(2,e, e.getMessage());
+        }
         logger.writeLogger(String.format(LoggerMessages.END_PACK.getFormatter(),setting.getInputPath()));
         return true;
     }

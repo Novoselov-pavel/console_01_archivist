@@ -1,5 +1,7 @@
 package model;
 
+import java.io.UnsupportedEncodingException;
+
 /**Option for command line, short and long version
  *
  */
@@ -24,6 +26,19 @@ public enum BashOption {
     public static BashOption getOptionFromString(String value) {
         if (value==null) return null;
         BashOption bash = null;
+
+        String conEnd = System.getProperty("consoleEncoding");
+        if (conEnd==null)
+            conEnd = System.getProperty("sun.jnu.encoding");
+        if (conEnd == null)
+            conEnd = "UTF-8";
+
+        try {
+            value = new  String(value.getBytes(conEnd),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+
         for (BashOption bashOption : BashOption.values()) {
             for (String s : bashOption.getStringOption()) {
                 if (s.equals(value)) {

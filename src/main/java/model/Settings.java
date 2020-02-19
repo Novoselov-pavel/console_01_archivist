@@ -13,7 +13,12 @@ public class Settings implements SettingInterface {
     private LinkedList<BashOption> options;
     private String inputPath;
     private String outputPath;
-    private String systemCode;
+    private String consoleEncode;
+    private String fileEncode;
+    public final String OUTPUT_FILE_NAME_FORMAT = "%s_%d.zip";
+    public final String INI_FILE_NAME_FORMAT = "%s_%d_prop.ini";
+    public final int MAX_ITERATION = 10;
+    public final int MAX_TIMEOUT = 30_000;
 
     /**Constructor. Throw InvalidBashOption if input Bash option is incorrect
      *
@@ -25,9 +30,20 @@ public class Settings implements SettingInterface {
     public Settings(LinkedList<BashOption> options, String inputPath, String outputPath) throws InvalidBashOption, UnsupportedEncodingException {
         if (isCorrect(options,inputPath,outputPath)) {
             this.options = options;
-            this.systemCode = getsystemCode();
-            this.inputPath = new String(inputPath.getBytes("UTF-8"),systemCode);
-            this.outputPath = new String(outputPath.getBytes("UTF-8"),systemCode);
+            String conEnd = System.getProperty("consoleEncoding");
+            if (conEnd==null)
+                    conEnd = System.getProperty("sun.jnu.encoding");
+            if (conEnd == null)
+                    conEnd = "UTF-8";
+            this.consoleEncode = conEnd;
+            String fileEnc = System.getProperty("file.encoding");
+            if (fileEnc==null)
+                    fileEnc = "UTF-8";
+            this.fileEncode = fileEnc;
+            if (inputPath!=null)
+            this.inputPath = new String(inputPath.getBytes(consoleEncode),consoleEncode);
+            if (outputPath!=null)
+            this.outputPath = new String(outputPath.getBytes(consoleEncode),consoleEncode);
         } else {
             throw new InvalidBashOption();
         }
@@ -43,6 +59,31 @@ public class Settings implements SettingInterface {
 
     public String getOutputPath() {
         return outputPath;
+    }
+
+    public String getConsoleEncode() {
+        return consoleEncode;
+    }
+
+    public String getFileEncode() {
+        return fileEncode;
+    }
+
+
+    public String getOUTPUT_FILE_NAME_FORMAT() {
+        return OUTPUT_FILE_NAME_FORMAT;
+    }
+
+    public String getINI_FILE_NAME_FORMAT() {
+        return INI_FILE_NAME_FORMAT;
+    }
+
+    public int getMAX_ITERATION() {
+        return MAX_ITERATION;
+    }
+
+    public int getMAX_TIMEOUT() {
+        return MAX_TIMEOUT;
     }
 
     @Override
@@ -81,14 +122,6 @@ public class Settings implements SettingInterface {
     }
 
 
-    private String getsystemCode() {
-        String os = System.getProperty("os.name").toLowerCase();
-        if(os.indexOf("win")>=0) {
-            return "Cp866";
-        } else {
-            return "UTF-8";
-        }
-    }
 
 
 

@@ -15,7 +15,8 @@ class ArchivistTest {
         input2[0] = "-v";
         Archivist.main(input1);
         Archivist.main(input2);
-
+asdasf
+        System.getProperty("file.separator");
         //TODO
     }
 }

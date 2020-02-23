@@ -3,60 +3,43 @@
   <ID>JAVA</ID>
   <OriginalElement />
   <nodes>
-    <node x="711.0625" y="285.0">controller.interfacesImplementation.FileProcess</node>
-    <node x="825.6747212773998" y="0.0">controller.interfaces.FileInterface</node>
-    <node x="138.91489512471657" y="0.0">controller.interfaces.ProcessInterface</node>
-    <node x="490.71461640211635" y="181.0">gui.Archivist</node>
-    <node x="499.21461640211635" y="0.0">model.SettingInterface</node>
-    <node x="32.5" y="168.0">model.Settings</node>
-    <node x="404.875" y="511.0">controller.interfacesImplementation.DeArchiveProcess</node>
-    <node x="124.0" y="93.0">controller.interfacesImplementation.ArchiveProcess</node>
-    <node x="540.9763085789871" y="422.0">controller.interfacesImplementation.FabricController</node>
-    <node x="467.0625" y="89.0">controller.interfaces.FabricControllerInterface</node>
+    <node x="530.0" y="358.0">controller.driver.GetCrc32</node>
+    <node x="0.0" y="358.0">controller.driver.ZipDriver</node>
+    <node x="374.0" y="358.0">gui.Archivist</node>
+    <node x="275.75" y="0.0">controller.interfaces.ProcessInterface</node>
+    <node x="204.0" y="358.0">controller.driver.FileProcess</node>
+    <node x="0.0" y="258.0">model.Settings</node>
+    <node x="113.5" y="179.0">model.SettingInterface</node>
+    <node x="361.0" y="79.0">controller.interfacesImplementation.DeArchiveProcess</node>
+    <node x="0.0" y="79.0">controller.interfacesImplementation.ArchiveProcess</node>
+    <node x="432.0" y="258.0">controller.interfacesImplementation.FabricController</node>
+    <node x="433.5" y="179.0">controller.interfaces.FabricControllerInterface</node>
   </nodes>
   <notes />
   <edges>
-    <edge source="controller.interfacesImplementation.FileProcess" target="controller.interfaces.FileInterface">
-      <point x="0.0" y="-27.5" />
-      <point x="836.0625" y="69.0" />
-      <point x="877.7997212773998" y="69.0" />
-      <point x="-17.375" y="14.5" />
-    </edge>
     <edge source="model.Settings" target="model.SettingInterface">
       <point x="0.0" y="-27.5" />
-      <point x="226.0" y="143.0" />
-      <point x="441.0" y="143.0" />
-      <point x="441.0" y="69.0" />
-      <point x="525.881283068783" y="69.0" />
-      <point x="-53.33333333333337" y="14.5" />
+      <point x="0.0" y="14.5" />
     </edge>
     <edge source="controller.interfacesImplementation.FabricController" target="controller.interfaces.FabricControllerInterface">
-      <point x="0.0" y="-14.5" />
-      <point x="620.9763085789871" y="402.0" />
-      <point x="614.7997212773998" y="402.0" />
-      <point x="614.7997212773998" y="143.0" />
-      <point x="634.3125" y="143.0" />
-      <point x="55.75" y="14.5" />
+      <point x="0.0" y="-27.5" />
+      <point x="0.0" y="14.5" />
     </edge>
     <edge source="controller.interfacesImplementation.DeArchiveProcess" target="controller.interfaces.ProcessInterface">
-      <point x="-104.14285714285711" y="-39.5" />
-      <point x="422.2321428571429" y="491.0" />
-      <point x="0.0" y="491.0" />
-      <point x="0.0" y="59.0" />
-      <point x="158.91489512471657" y="59.0" />
-      <point x="-60.0" y="14.5" />
+      <point x="0.0" y="-27.5" />
+      <point x="541.0" y="54.0" />
+      <point x="395.75" y="54.0" />
+      <point x="40.0" y="14.5" />
     </edge>
     <edge source="controller.interfacesImplementation.ArchiveProcess" target="controller.interfaces.ProcessInterface">
-      <point x="28.0" y="-39.5" />
-      <point x="430.0" y="69.0" />
-      <point x="238.91489512471657" y="69.0" />
-      <point x="20.0" y="14.5" />
+      <point x="0.0" y="-27.5" />
+      <point x="170.5" y="54.0" />
+      <point x="315.75" y="54.0" />
+      <point x="-40.0" y="14.5" />
     </edge>
   </edges>
-  <settings layout="Hierarchic Group" zoom="1.0" x="475.5" y="276.5" />
-  <SelectedNodes>
-    <node>controller.interfacesImplementation.ArchiveProcess</node>
-  </SelectedNodes>
+  <settings layout="Hierarchic Group" zoom="1.0" x="714.0" y="361.5" />
+  <SelectedNodes />
   <Categories>
     <Category>Constructors</Category>
   </Categories>

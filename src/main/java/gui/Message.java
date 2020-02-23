@@ -1,9 +1,11 @@
 package gui;
 
 
+import model.LoggerMessages;
 import model.SettingInterface;
 
 import java.io.*;
+import java.nio.file.Path;
 
 /**The Message class for retirement messages to System.out and System.Err.
  * Can exit program.
@@ -95,6 +97,17 @@ public class Message implements ExitProgramInterface, LoggerInterface {
         if (false) { ///TODO add command line option for enabled and disabled log
             outWriter.println(returnConsoleMessage(message));
         }
+    }
+
+    /**
+     * Write message to System.out if log is enable
+     *
+     * @param logger {@link LoggerMessages}
+     * @param option - Path of a file
+     */
+    @Override
+    public void writeLogger(LoggerMessages logger, Path option) {
+        writeLogger(String.format(logger.getFormatter(),option.toString()));
     }
 
     /** Return message encode in current console encode, on error return original message

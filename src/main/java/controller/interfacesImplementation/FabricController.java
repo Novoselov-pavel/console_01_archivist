@@ -1,10 +1,9 @@
 package controller.interfacesImplementation;
 
 import controller.BashOptionRead;
-import controller.GetCrc32;
+import controller.driver.GetCrc32;
 import controller.interfaces.Crc32Interface;
 import controller.interfaces.FabricControllerInterface;
-import controller.interfaces.FileInterface;
 import controller.interfaces.ProcessInterface;
 import exception.InvalidBashOption;
 import gui.*;
@@ -17,7 +16,6 @@ import java.io.UnsupportedEncodingException;
 public class FabricController implements FabricControllerInterface {
     private static ExitProgramInterface exitProgramInterface = null;
     private static LoggerInterface loggerInterface = null;
-    private static FileInterface fileInterface = null;
     private static SettingInterface settings = null;
 
     public FabricController(String[] args) {
@@ -36,13 +34,6 @@ public class FabricController implements FabricControllerInterface {
             loggerInterface = new Message(getSettings());
         }
         return loggerInterface;
-    }
-
-    @Override
-    public FileInterface getFileInterface() {
-        if (fileInterface==null)
-            fileInterface = new FileProcess(getLoggerInterface());
-        return new FileProcess(getLoggerInterface());
     }
 
     /**

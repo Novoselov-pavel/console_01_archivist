@@ -6,7 +6,9 @@ public enum LoggerMessages {
     WRITE_INI_FILE("Writing ini file %s"),
     BEGIN_UNPACK("Begin unpacking of %s"),
     END_UNPACK("End unpacking of file %s"),
-    READ_INI_FILE("Reading ini file %s");
+    READ_INI_FILE("Reading ini file %s"),
+    END_ALL_PACK_PROCESS("End all pack process %s");
+
 
 
     private String formatString;

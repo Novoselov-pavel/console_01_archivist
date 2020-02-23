@@ -3,6 +3,9 @@ package model;
 import exception.InvalidBashOption;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.Objects;
 
@@ -11,8 +14,8 @@ import java.util.Objects;
  */
 public class Settings implements SettingInterface {
     private LinkedList<BashOption> options;
-    private String inputPath;
-    private String outputPath;
+    private Path inputPath;
+    private Path outputPath;
     private String consoleEncode;
     private String fileEncode;
     public final String OUTPUT_FILE_NAME_FORMAT = "%s_%d.zip";
@@ -34,16 +37,16 @@ public class Settings implements SettingInterface {
             if (conEnd==null)
                     conEnd = System.getProperty("sun.jnu.encoding");
             if (conEnd == null)
-                    conEnd = "UTF-8";
+                    conEnd ="UTF-8";
             this.consoleEncode = conEnd;
             String fileEnc = System.getProperty("file.encoding");
             if (fileEnc==null)
                     fileEnc = "UTF-8";
             this.fileEncode = fileEnc;
             if (inputPath!=null)
-            this.inputPath = new String(inputPath.getBytes(consoleEncode),consoleEncode);
+            this.inputPath = Paths.get(inputPath);
             if (outputPath!=null)
-            this.outputPath = new String(outputPath.getBytes(consoleEncode),consoleEncode);
+            this.outputPath = Paths.get(outputPath);
         } else {
             throw new InvalidBashOption();
         }
@@ -53,11 +56,11 @@ public class Settings implements SettingInterface {
         return options;
     }
 
-    public String getInputPath() {
+    public Path getInputPath() {
         return inputPath;
     }
 
-    public String getOutputPath() {
+    public Path getOutputPath() {
         return outputPath;
     }
 

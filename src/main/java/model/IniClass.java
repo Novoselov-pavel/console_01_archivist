@@ -3,6 +3,7 @@ package model;
 import gui.Archivist;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.List;
 
 public class IniClass implements Serializable {
@@ -19,13 +20,13 @@ public class IniClass implements Serializable {
     }
 
     public void storeToFile() throws IOException {
-        try(FileOutputStream stream = new FileOutputStream(iniFileItem.getFullFileName())) {
+        try(OutputStream stream = Files.newOutputStream(iniFileItem.getFilePath())) {
             storeToFile(stream);
         }
     }
 
     public void loadFromFile() throws IOException, ClassNotFoundException {
-        try(FileInputStream stream = new FileInputStream(iniFileItem.getFullFileName())) {
+        try(InputStream stream = Files.newInputStream(iniFileItem.getFilePath())) {
             loadFromFile(stream);
         }
     }
@@ -38,16 +39,16 @@ public class IniClass implements Serializable {
         return iniFileItem;
     }
 
-    public FileItem getFileItemFromList(String relativeFilePath) {
+    public FileItem getFileItemFromList(String path) {
         for (FileItem item : itemList) {
-            if (item.getRelativeFilePath().equals(relativeFilePath))
+            if (item.getFilePath().equals(path))
                 return item;
         }
         return null;
     }
 
-    public boolean checkCRC(String relativeFilePath, String crc) {
-        FileItem item = getFileItemFromList(relativeFilePath);
+    public boolean checkCRC(String path, String crc) {
+        FileItem item = getFileItemFromList(path);
         if (item==null) return false;
         return item.getCrc32().equals(crc);
     }

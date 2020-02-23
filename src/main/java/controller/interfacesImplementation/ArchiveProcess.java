@@ -1,35 +1,35 @@
 package controller.interfacesImplementation;
 
+import controller.driver.FileProcess;
+import controller.driver.ZipDriver;
 import controller.interfaces.Crc32Interface;
 import controller.interfaces.FabricControllerInterface;
 import controller.interfaces.ProcessInterface;
+import exception.InvalidBashOption;
+import gui.ExitProgramInterface;
 import gui.LoggerInterface;
 import model.FileItem;
 import model.IniClass;
 import model.LoggerMessages;
 import model.SettingInterface;
-import org.apache.tools.zip.Zip64Mode;
-import org.apache.tools.zip.ZipEntry;
-import org.apache.tools.zip.ZipOutputStream;
 
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 /**Archived files and writing Ini File
  *
  */
 public class ArchiveProcess implements ProcessInterface {
+    private static int currentIteration = 1;
     private final FabricControllerInterface fabric;
     private final SettingInterface setting;
     private final LoggerInterface logger;
+    private final ExitProgramInterface exit;
     private FileItem outputFile;
     private FileItem iniFile;
     private List<FileItem> fileList = new ArrayList<>();
@@ -38,117 +38,122 @@ public class ArchiveProcess implements ProcessInterface {
         this.fabric = fabric;
         this.setting = fabric.getSettings();
         this.logger = fabric.getLoggerInterface();
+        this.exit = fabric.getExitProgramInterface();
         getOutputFiles();
     }
 
-    /**Archive files
+    /**Pack files
      *
-     * @return
+     * @return true
      */
     public boolean write() {
-        Path path = Paths.get(outputFile.getFullFileName());
-        if (!Files.exists(path.getParent())) {
-            try {
-                Files.createDirectories(path.getParent());
-            } catch (IOException e) {
-                fabric.getExitProgramInterface().exitProgram(2,e,e.getMessage());
-            }
-        }
-
-        try(FileOutputStream stream = new FileOutputStream(outputFile.getFullFileName());
-            ZipOutputStream zipOut = new ZipOutputStream(stream)) {
-            zipOut.setEncoding(setting.getConsoleEncode());
-            zipOut.setUseZip64(Zip64Mode.Always);
-            File fileSource = new File(setting.getInputPath());
-            logger.writeLogger(String.format(LoggerMessages.BEGIN_PACK.getFormatter(),fileSource.getName()));
-            fileList = fabric.getFileInterface().getFileItemArrayListFromFile(fileSource,fileList,setting.getInputPath());
-            writeFileListToZIP(zipOut);
-        } catch (IOException ex) {
-            fabric.getExitProgramInterface().exitProgram(2,ex, ex.getMessage());
-        }
-
-        Crc32Interface zipCRC = fabric.getCRC32Class();
+        checkInputPath();
+        //writing zip archive
         try {
-            zipCRC.update(outputFile.getFullFileName());
-            outputFile.setCrc32(zipCRC.getValue());
-            outputFile.setExitFile(true);
-        } catch (IOException ex) {
-            fabric.getExitProgramInterface().exitProgram(2,ex, ex.getMessage());
+            writeZip();
+            addOutputFileToList();
+            writeIniFile();
+        } catch (IOException e) {
+            exit.exitProgram(2,e,e.getMessage());
         }
-        logger.writeLogger(String.format(LoggerMessages.WRITE_INI_FILE.getFormatter(),iniFile.getRelativeFilePath()));
-        fileList.add(outputFile);
+        //writing  ini file
+        return true;
+    }
+
+    /** Create and save ini file;
+     *
+     * @return true
+     * @throws IOException at error
+     */
+    private boolean writeIniFile() throws IOException {
         IniClass iniClass = new IniClass(fileList,iniFile);
         try {
             iniClass.storeToFile();
         } catch (IOException e) {
-            fabric.getExitProgramInterface().exitProgram(2,e, e.getMessage());
+            throw e;
         }
-        logger.writeLogger(String.format(LoggerMessages.END_PACK.getFormatter(),setting.getInputPath()));
+        logger.writeLogger(LoggerMessages.END_ALL_PACK_PROCESS,outputFile.getFilePath());
         return true;
     }
 
-    /** Write fileList into ZipOutputStream stream
+    /**Add outputFile to fileList
      *
-     * @param stream
+     * @return true
+     * @throws IOException at error
      */
-    private void writeFileListToZIP(ZipOutputStream stream) {
-        ArrayList<FileItem> task = new ArrayList<>(fileList);
-        Iterator<FileItem> iterator = task.iterator();
-        int currentLoop = 0;
-        int maxIter = setting.getMAX_ITERATION()*fileList.size();
-        while (iterator.hasNext()) {
-            FileItem fileItem = iterator.next();
-            logger.writeLogger(String.format(LoggerMessages.BEGIN_PACK.getFormatter(),fileItem.getRelativeFilePath()));
-            try {
-                ZipEntry entry = new ZipEntry(fileItem.getRelativeFilePath());
-                stream.putNextEntry(entry);
-                if (!fileItem.isDirectory()) {
-                    try (FileInputStream fileInputStream = new FileInputStream(fileItem.getFullFileName())) {
-                        String crc32 = fabric.getFileInterface().writeStreamAndReturnCRC(fileInputStream,stream);
-                        fileItem.setCrc32(crc32);
-                        logger.writeLogger(String.format(LoggerMessages.END_PACK.getFormatter(),fileItem.getRelativeFilePath()));
-                        iterator.remove();
-                    } catch (IOException ignored) {
-                        //Ignore exception
-                    }
-                } else {
-                    logger.writeLogger(String.format(LoggerMessages.END_PACK.getFormatter(),fileItem.getRelativeFilePath()));
-                    iterator.remove();
-                }
-            } catch (IOException ignored) {
-                //Ignore exception
-            }
-
-
-            if (++currentLoop % fileList.size() ==0 && currentLoop<maxIter) {
-              try {
-                    Thread.sleep((int)Math.random()*setting.getMAX_TIMEOUT());
-                  } catch (InterruptedException e) {}
-            } else if (currentLoop == maxIter) {
-                fabric.getExitProgramInterface().exitProgram(2,new IOException(),"Problem with access to files");
-            }
+    private boolean addOutputFileToList() throws IOException {
+        Crc32Interface zipCRC = fabric.getCRC32Class();
+        try {
+            zipCRC.update(outputFile.getFilePath().toFile());
+            outputFile.setCrc32(zipCRC.getValue());
+            outputFile.setExitFile(true);
+            outputFile.setFilePath(outputFile.getFilePath().getFileName());
+        } catch (IOException ex) {
+           throw ex;
         }
+        logger.writeLogger(LoggerMessages.WRITE_INI_FILE,iniFile.getFilePath());
+        fileList.add(outputFile);
+        return true;
     }
+
+    /** write zip file, on Exception try to write {@link SettingInterface#getMAX_ITERATION()} times with random delay
+     * initialized with {@link SettingInterface#getMAX_TIMEOUT()}.
+     *
+     * @return true
+     * @throws IOException if it can't end writing
+     */
+    private boolean writeZip() throws IOException {
+        try {
+            Files.createDirectories(outputFile.getFilePath());
+            FileProcess fileDriver = new FileProcess();
+            ZipDriver zipDriver = new ZipDriver(outputFile.getFilePath());
+            logger.writeLogger(LoggerMessages.BEGIN_PACK,outputFile.getFilePath());
+            List<FileItem>  inputFileList= fileDriver.getFileItemArrayListFromFile(setting.getInputPath(),null);
+            zipDriver.packListToZipFile(inputFileList,setting.getInputPath());
+            logger.writeLogger(LoggerMessages.END_PACK,outputFile.getFilePath());
+        } catch (IOException e) {
+            ///block there trying to
+            FileProcess fileProcess = new FileProcess();
+            try{
+                fileProcess.deleteFile(outputFile.getFilePath());
+            } catch (IOException ex) {  }
+
+            for (; currentIteration <setting.getMAX_ITERATION();) {
+                try {
+                    Thread.sleep(new Random(setting.getMAX_TIMEOUT()).nextLong());
+                    writeZip();
+                    return true;
+                }catch (Exception ex) {
+                    currentIteration++;
+                }
+            }
+            throw e;
+        }
+        return true;
+    }
+
 
     /**Check and create name for output file and for ini file, write path into String @outputFileName and @iniFileName
      *
-     * @return
      */
-    private void getOutputFiles () {
+    private void getOutputFiles() {
+        FileProcess fileProcess = new FileProcess();
         try {
-            Date date = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-            String dateString = new String(dateFormat.format(date).getBytes("UTF-8"), setting.getConsoleEncode());
-            String iniFilePath = fabric.getFileInterface().
-                    getFreeFileName(setting.getINI_FILE_NAME_FORMAT(),dateString,setting.getOutputPath());
-            String outputFilePath = fabric.getFileInterface().
-                    getFreeFileName(setting.getOUTPUT_FILE_NAME_FORMAT(),dateString,setting.getOutputPath());
-            iniFile = new FileItem(setting.getOutputPath(),new File(iniFilePath));
-            outputFile = new FileItem(setting.getOutputPath(),new File(outputFilePath));
-
-        } catch (UnsupportedEncodingException ex) {
-            fabric.getExitProgramInterface().exitProgram(2,ex,ex.getMessage());
+            Path outputPath = fileProcess.getNewTodayFile(setting.getOUTPUT_FILE_NAME_FORMAT(), setting.getOutputPath(), setting.getConsoleEncode());
+            Path  iniFilePath = fileProcess.getNewTodayFile(setting.getINI_FILE_NAME_FORMAT(),setting.getOutputPath(),setting.getConsoleEncode());
+            iniFile = new FileItem(iniFilePath,false,null);
+            outputFile = new FileItem(outputPath,false,null);
+        } catch (Exception e) {
+            fabric.getExitProgramInterface().exitProgram(2,e,e.getMessage());
         }
     }
 
+    /**check settings
+     *
+     */
+    private void checkInputPath() {
+        if (!Files.exists(setting.getInputPath())) {
+            exit.exitProgram(2,new InvalidBashOption(),"Input file doesn't exist");
+        }
+    }
 }

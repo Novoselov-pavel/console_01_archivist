@@ -2,7 +2,6 @@ package controller.fileVisitors;
 
 import model.FileItem;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
@@ -17,12 +16,18 @@ import java.util.List;
  */
 public class FileVisitorAddFileItemToList extends SimpleFileVisitor<Path> {
 
-    private List<FileItem> list;
-    private String basePath;
+    private final List<FileItem> list;
+    private final List<Path> excludedPath;
 
-    public FileVisitorAddFileItemToList(List<FileItem> list, String basePath) {
+    /** {@link java.nio.file.FileVisitor} implementation. Creating {@link FileItem} for all files and directory and add
+     * its to List. Path in excludedPath List won't  be added in resultList
+     *
+     * @param list Output List,not null
+     * @param excludedPath List of excluded path, can be null
+     */
+    public FileVisitorAddFileItemToList(List<FileItem> list, List<Path>  excludedPath) {
         this.list = list;
-        this.basePath = basePath;
+        this.excludedPath = excludedPath;
     }
 
     /**
@@ -36,8 +41,10 @@ public class FileVisitorAddFileItemToList extends SimpleFileVisitor<Path> {
      */
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        FileItem fileItem = new FileItem(basePath,file.toFile());
-        list.add(fileItem);
+        if(excludedPath==null || !excludedPath.contains(file)) {
+            FileItem fileItem = new FileItem(file,false,null);
+            list.add(fileItem);
+        }
         return FileVisitResult.CONTINUE;
     }
 
@@ -55,8 +62,8 @@ public class FileVisitorAddFileItemToList extends SimpleFileVisitor<Path> {
      */
     @Override
     public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-        if (!basePath.equals(dir.toString()) && !modBasePath().equals(dir.toString())) {
-            FileItem fileItem = new FileItem(basePath,dir.toFile());
+        if (excludedPath==null || !excludedPath.contains(dir)) {
+            FileItem fileItem = new FileItem(dir,true,null);
             list.add(fileItem);
         }
         return FileVisitResult.CONTINUE;
@@ -68,12 +75,5 @@ public class FileVisitorAddFileItemToList extends SimpleFileVisitor<Path> {
      */
     public List<FileItem> getList() {
         return list;
-    }
-
-    private String modBasePath() {
-        if (basePath.endsWith("/"))
-            return basePath.substring(0,basePath.lastIndexOf("/"));
-        else
-            return basePath + "/";
     }
 }

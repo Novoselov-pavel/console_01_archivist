@@ -12,6 +12,7 @@ import java.util.*;
 
 public class FileProcess {
 
+    private static Map<Path, Path> pathMap = new HashMap<>(); ///use in copyFromInputToDestination();
 
     /**Check and return non-existed path of the file from fileFormat string.
      *
@@ -51,20 +52,16 @@ public class FileProcess {
         return visitor.getList();
     }
 
-    /**Copy all from input path to destination path. File names doesn't change. Symbolic link copy as link.
-     *
+    /**Safe copy all from input path to destination path. File names doesn't change. Symbolic link copy as link.
+     * on error rollback all
      * @param inputPath input path of file or directory
      * @param destinationPath destination path
      * @param overwrite  boolean overwrite
      */
-    public void copyFromInputToDestination(final Path inputPath, final Path destinationPath, final boolean overwrite) throws IOException {
-
-        if (Files.isRegularFile(inputPath)|| Files.isSymbolicLink(inputPath)) {
-            Files.createDirectories(destinationPath);
-            if (overwrite)
-                Files.copy(inputPath,destinationPath,StandardCopyOption.REPLACE_EXISTING);
-            else
-                Files.copy(inputPath,destinationPath);
+    public void copyFromInputToDestination(final Path inputPath, final Path destinationPath, final boolean overwrite) {
+       /// TODO change for safe version with rollback
+        if (Files.isRegularFile(inputPath) || Files.isSymbolicLink(inputPath)) {
+            copyFile(inputPath,destinationPath,overwrite);
             return;
         }
 
@@ -94,6 +91,54 @@ public class FileProcess {
      */
     private boolean checkBasePath(File file, String basePath) {
         return file.getPath().indexOf(basePath)>-1;
+    }
+
+    /**Copy file from inputPath to destinationPath call rollback() on error and throw IOException
+     *
+     * @param inputPath  input path of file or directory
+     * @param destinationPath destination path
+     * @param overwrite boolean overwrite
+     * @throws IOException on error
+     */
+    private void copyFile (final Path inputPath, final Path destinationPath, final boolean overwrite) throws IOException {
+        if (Files.exists(destinationPath)) {
+            createTempFileAndAddToMap(destinationPath);
+        }
+        try {
+            Files.createDirectories(destinationPath);
+        } catch (FileAlreadyExistsException ex) {}
+        if (overwrite)
+            try {
+                Files.copy(inputPath,destinationPath,StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException ex) {
+                rollback();
+                throw ex;
+            }
+        else
+        if (!Files.exists(destinationPath)) {
+            try {
+                Files.copy(inputPath,destinationPath);
+            } catch (IOException ex) {
+                rollback();
+                throw ex;
+            }
+        }
+    }
+
+
+    private void rollback() {
+        //TODO
+    }
+
+    /**Create copy file from  inputPath to temp file and
+     *
+     * @param inputPath
+     * @throws IOException
+     */
+    private void createTempFileAndAddToMap(final Path inputPath) throws IOException {
+        Path path = Files.createTempFile(inputPath.getFileName().toString(),null);
+        Files.copy(inputPath,path,StandardCopyOption.REPLACE_EXISTING);
+        pathMap.put(inputPath,path);
     }
 
 

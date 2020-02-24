@@ -7,7 +7,10 @@ public enum LoggerMessages {
     BEGIN_UNPACK("Begin unpacking of %s"),
     END_UNPACK("End unpacking of file %s"),
     READ_INI_FILE("Reading ini file %s"),
-    END_ALL_PACK_PROCESS("End all pack process %s");
+    END_ALL_PACK_PROCESS("End all pack process %s"),
+    CHECK_CRC_OK("OK CRC for file %s"),
+    CHECK_CRC_FAIL("FAIL CRC for file %");
+
 
 
 

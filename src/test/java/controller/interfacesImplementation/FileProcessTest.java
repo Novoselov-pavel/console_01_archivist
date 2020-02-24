@@ -1,7 +1,9 @@
 package controller.interfacesImplementation;
 
+import controller.driver.FileProcess;
 import controller.interfaces.FabricControllerInterface;
 import exception.InvalidBashOption;
+import model.FileItem;
 import org.junit.jupiter.api.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -20,22 +22,6 @@ class FileProcessTest {
     @Test
     void copyFromInputDirectoryToDestination() {
     }
-
-    @Test
-    void getFreeFileName() {
-
-        try {
-            FabricControllerInterface controller = createSetting();
-            String s = controller.getFileInterface().getFreeFileName(controller.getSettings().getOUTPUT_FILE_NAME_FORMAT(),"file1",controller.getSettings().getOutputPath());
-            assertEquals(s,controller.getSettings().getOutputPath()+String.format(controller.getSettings().getOUTPUT_FILE_NAME_FORMAT(),"file1",0));
-
-        } catch (Exception e) {
-            fail();
-        }
-
-
-    }
-
     @Test
     void getDirectoryPath() {
     }

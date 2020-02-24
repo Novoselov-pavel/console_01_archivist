@@ -1,6 +1,8 @@
 package controller.interfacesImplementation;
 
 
+import controller.driver.FileProcess;
+import controller.driver.ZipDriver;
 import controller.interfaces.Crc32Interface;
 import controller.interfaces.FabricControllerInterface;
 import controller.interfaces.ProcessInterface;
@@ -10,15 +12,10 @@ import model.FileItem;
 import model.IniClass;
 import model.LoggerMessages;
 import model.SettingInterface;
-import org.apache.tools.zip.ZipEntry;
-import org.apache.tools.zip.ZipFile;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Enumeration;
 import java.util.List;
 
 public class DeArchiveProcess implements ProcessInterface {
@@ -45,23 +42,38 @@ public class DeArchiveProcess implements ProcessInterface {
      * @return
      */
     public boolean write() {
-        loadIniFileAndCheck();
-        Path outputTempPath = outputTempPath(settings.getOutputPath());
-        unPackZipFileToTempFolder(outputTempPath);
+        Path outputTempPath = getTempPath(settings.getOutputPath(), "temp%d");
+       try {
+           loadIniFileAndCheck();
+           List<FileItem> list = unPackZipFileToTempFolder(outputTempPath);
+           checkUnPackFiles(list);
+       } catch (Exception ex) {
+           exitProgramInterface.exitProgram(2,ex, ex.getMessage());
+       }
+       try {
+           FileProcess fileProcess = new FileProcess();
+           fileProcess.copyFromInputToDestination(outputTempPath,settings.getOutputPath(),true);
+       } catch (Exception ex) {
+           exitProgramInterface.exitProgram(2, ex, ex.getMessage());
+       }
+        return true;
+    }
 
-
-
-        String inputPath = iniClass.getIniFileItem().getDirectoryName();
-        String outputPath = settings.getOutputPath();
-
-
-
-
-
-
-
-
-        fileInterface.copyFromInputDirectoryToDestination(outputTempPath,outputPath,true);
+    /**check crc for FileItem in List
+     *
+     * @param items List of FileItem
+     * @return true
+     * @throws Exception if check was failed
+     */
+    private boolean checkUnPackFiles(List<FileItem> items) throws Exception {
+        for (FileItem item : items) {
+            if (iniClass.checkCRC(item.getFilePath(),item.getCrc32()))
+                logger.writeLogger(LoggerMessages.CHECK_CRC_OK,item.getFilePath().getFileName());
+            else {
+                logger.writeLogger(LoggerMessages.CHECK_CRC_FAIL,item.getFilePath().getFileName());
+                throw new Exception("Fail crc of "+item.getFilePath().getFileName().toString());
+            }
+        }
         return true;
     }
 
@@ -71,40 +83,13 @@ public class DeArchiveProcess implements ProcessInterface {
      * @return true
      * @throws IOException on error
      */
-    private boolean unPackZipFileToTempFolder(Path outputFolder) throws IOException {
+    private List<FileItem> unPackZipFileToTempFolder(Path outputFolder) throws IOException {
         FileItem zipFileItem = searchZIP(iniClass.getItemList());
-        logger.writeLogger(String.format(LoggerMessages.BEGIN_UNPACK.getFormatter(),zipFileItem.getFilePath()));
-
-        //TODO
-
-        try (ZipFile zipFile = new ZipFile(zipFileItem.getFullFileName(), settings.getConsoleEncode())) {
-            Enumeration<ZipEntry> entries = zipFile.getEntries();
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                logger.writeLogger(String.format(LoggerMessages.BEGIN_UNPACK.getFormatter(),entry.getName()));
-
-                fileInterface.createAllPathDirectory(outputTempPath+entry.getName());
-
-                if (isDirectory(entry.getName())) {
-                    logger.writeLogger(String.format(LoggerMessages.END_UNPACK.getFormatter(),entry.getName()));
-                    continue;
-                }
-
-                try (FileOutputStream outputStream  = new FileOutputStream(outputTempPath+entry.getName());
-                     InputStream stream = zipFile.getInputStream(entry)) {
-                    String crc = fileInterface.writeStreamAndReturnCRC(stream, outputStream);
-                    if (!iniClass.checkCRC(entry.getName(),crc))
-                        throw  new Exception(String.format("File %s have wrong CRC",entry.getName()));
-
-                    logger.writeLogger(String.format(LoggerMessages.END_UNPACK.getFormatter(),entry.getName()));
-                } catch (Exception e) {
-                    exitProgramInterface.exitProgram(2,e,"File dearchiving problem. Perhaps wrong archive");
-                }
-            }
-        } catch (Exception e) {
-            exitProgramInterface.exitProgram(2,e,null);
-        }
-
+        logger.writeLogger(LoggerMessages.BEGIN_UNPACK,zipFileItem.getFilePath());
+        ZipDriver zipDriver = new ZipDriver(settings.getInputPath().getParent().resolve(zipFileItem.getFilePath()));
+        List<FileItem> list = zipDriver.unpackZipFile(settings.getOutputPath(),settings.getConsoleEncode());
+        logger.writeLogger(LoggerMessages.END_PACK,zipFileItem.getFilePath());
+        return list;
     }
 
     /**Load ini file and check CRC zip file.
@@ -137,18 +122,16 @@ public class DeArchiveProcess implements ProcessInterface {
         return null;
     }
 
-    private Path outputTempPath (Path outputPath) {
+    private Path getTempPath(Path outputPath, String pathFormat) {
         int i = 0;
-        String pathFormat = "temp%d"+System.getProperty("file.separator");
-        while (Files.exists(outputPath.resolve(String.format(pathFormat,i)))) {
+        String s = pathFormat+System.getProperty("file.separator");
+        while (Files.exists(outputPath.resolve(String.format(s,i)))) {
             i++;
         }
-        return outputPath.resolve(String.format(pathFormat,i));
+        return outputPath.resolve(String.format(s,i));
     }
 
-    private boolean isDirectory(String path) {
-        return path.endsWith("/");
-    }
+
 
 }
 

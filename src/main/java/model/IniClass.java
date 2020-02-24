@@ -4,6 +4,7 @@ import gui.Archivist;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 public class IniClass implements Serializable {
@@ -39,15 +40,15 @@ public class IniClass implements Serializable {
         return iniFileItem;
     }
 
-    public FileItem getFileItemFromList(String path) {
+    public FileItem getFileItemFromList(Path path) {
         for (FileItem item : itemList) {
-            if (item.getFilePath().equals(path))
+            if (item.getFilePath().getFileName().equals(path.getFileName()))
                 return item;
         }
         return null;
     }
 
-    public boolean checkCRC(String path, String crc) {
+    public boolean checkCRC(Path path, String crc) {
         FileItem item = getFileItemFromList(path);
         if (item==null) return false;
         return item.getCrc32().equals(crc);

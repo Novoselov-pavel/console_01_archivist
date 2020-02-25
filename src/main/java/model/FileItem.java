@@ -1,15 +1,16 @@
 package model;
 
-import java.io.File;
-import java.io.Serializable;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 public class FileItem implements Serializable {
     private static final long serialVersionUID = 20200125002L;
     public transient static final String DIR_CRC32 = "DIR";
-    private Path filePath;
+    private transient Path filePath;
+    @SuppressWarnings("CanBeFinal")
     private boolean isDirectory;
     private String crc32;
     private boolean isExitFile = false;
@@ -80,5 +81,13 @@ public class FileItem implements Serializable {
         return Objects.hash(filePath, isDirectory, isExitFile);
     }
 
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        out.writeObject(filePath.toString());
+    }
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        filePath = Paths.get((String)in.readObject());
+    }
 
 }

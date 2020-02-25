@@ -14,7 +14,7 @@ public enum LoggerMessages {
 
 
 
-    private String formatString;
+    private final String formatString;
     private LoggerMessages(String formatString) {
         this.formatString = formatString;
     }

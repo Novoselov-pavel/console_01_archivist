@@ -1,6 +1,6 @@
 package controller.interfacesImplementation;
 
-import controller.driver.FileProcess;
+import controller.driver.FileDriver;
 import controller.driver.ZipDriver;
 import controller.interfaces.Crc32Interface;
 import controller.interfaces.FabricControllerInterface;
@@ -24,6 +24,7 @@ import java.util.Random;
 /**Archived files and writing Ini File
  *
  */
+@SuppressWarnings("CatchMayIgnoreException")
 public class ArchiveProcess implements ProcessInterface {
     private static int currentIteration = 1;
     private final FabricControllerInterface fabric;
@@ -65,13 +66,10 @@ public class ArchiveProcess implements ProcessInterface {
      * @return true
      * @throws IOException at error
      */
+    @SuppressWarnings({"UnusedReturnValue", "SameReturnValue"})
     private boolean writeIniFile() throws IOException {
         IniClass iniClass = new IniClass(fileList,iniFile);
-        try {
-            iniClass.storeToFile();
-        } catch (IOException e) {
-            throw e;
-        }
+        iniClass.storeToFile();
         logger.writeLogger(LoggerMessages.END_ALL_PACK_PROCESS,outputFile.getFilePath());
         return true;
     }
@@ -81,16 +79,13 @@ public class ArchiveProcess implements ProcessInterface {
      * @return true
      * @throws IOException at error
      */
+    @SuppressWarnings({"UnusedReturnValue", "SameReturnValue"})
     private boolean addOutputFileToList() throws IOException {
         Crc32Interface zipCRC = fabric.getCRC32Class();
-        try {
-            zipCRC.update(outputFile.getFilePath().toFile());
-            outputFile.setCrc32(zipCRC.getValue());
-            outputFile.setExitFile(true);
-            outputFile.setFilePath(outputFile.getFilePath().getFileName());
-        } catch (IOException ex) {
-           throw ex;
-        }
+        zipCRC.update(outputFile.getFilePath().toFile());
+        outputFile.setCrc32(zipCRC.getValue());
+        outputFile.setExitFile(true);
+        outputFile.setFilePath(outputFile.getFilePath().getFileName());
         logger.writeLogger(LoggerMessages.WRITE_INI_FILE,iniFile.getFilePath());
         fileList.add(outputFile);
         return true;
@@ -102,20 +97,22 @@ public class ArchiveProcess implements ProcessInterface {
      * @return true
      * @throws IOException if it can't end writing
      */
+    @SuppressWarnings({"UnusedReturnValue", "SameReturnValue"})
     private boolean writeZip() throws IOException {
         try {
-            Files.createDirectories(outputFile.getFilePath());
-            FileProcess fileDriver = new FileProcess();
+            Files.createDirectories(outputFile.getFilePath().getParent());
+            FileDriver fileDriver = new FileDriver();
             ZipDriver zipDriver = new ZipDriver(outputFile.getFilePath());
             logger.writeLogger(LoggerMessages.BEGIN_PACK,outputFile.getFilePath());
-            List<FileItem>  inputFileList= fileDriver.getFileItemArrayListFromFile(setting.getInputPath(),null);
-            zipDriver.packListToZipFile(inputFileList,setting.getInputPath());
+            fileList= fileDriver.getFileItemArrayListFromFile(setting.getInputPath(),fileList);
+            zipDriver.packListToZipFile(fileList,setting.getInputPath(),setting.getConsoleEncode());
+
             logger.writeLogger(LoggerMessages.END_PACK,outputFile.getFilePath());
         } catch (IOException e) {
             ///block there trying to
-            FileProcess fileProcess = new FileProcess();
+            FileDriver fileDriver = new FileDriver();
             try{
-                fileProcess.deleteFile(outputFile.getFilePath());
+                fileDriver.deleteFile(outputFile.getFilePath());
             } catch (IOException ex) {  }
 
             for (; currentIteration <setting.getMAX_ITERATION();) {
@@ -137,10 +134,10 @@ public class ArchiveProcess implements ProcessInterface {
      *
      */
     private void getOutputFiles() {
-        FileProcess fileProcess = new FileProcess();
+        FileDriver fileDriver = new FileDriver();
         try {
-            Path outputPath = fileProcess.getNewTodayFile(setting.getOUTPUT_FILE_NAME_FORMAT(), setting.getOutputPath(), setting.getConsoleEncode());
-            Path  iniFilePath = fileProcess.getNewTodayFile(setting.getINI_FILE_NAME_FORMAT(),setting.getOutputPath(),setting.getConsoleEncode());
+            Path outputPath = fileDriver.getNewTodayFile(setting.getOUTPUT_FILE_NAME_FORMAT(), setting.getOutputPath(), setting.getConsoleEncode());
+            Path  iniFilePath = fileDriver.getNewTodayFile(setting.getINI_FILE_NAME_FORMAT(),setting.getOutputPath(),setting.getConsoleEncode());
             iniFile = new FileItem(iniFilePath,false,null);
             outputFile = new FileItem(outputPath,false,null);
         } catch (Exception e) {

@@ -4,15 +4,18 @@ import controller.fileVisitors.FileVisitorAddFileItemToList;
 import controller.fileVisitors.FileVisitorDelete;
 import model.FileItem;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class FileProcess {
+@SuppressWarnings("CatchMayIgnoreException")
+public class FileDriver {
 
-    private static Map<Path, Path> pathMap = new HashMap<>(); ///use in copyFromInputToDestination();
+    private static final Map<Path, Path> pathMap = new HashMap<>(); ///use in copyFromInputToDestination();
 
     /**Check and return non-existed path of the file from fileFormat string.
      *
@@ -57,26 +60,26 @@ public class FileProcess {
      * @param inputPath input path of file or directory
      * @param destinationPath destination path
      * @param overwrite  boolean overwrite
+     * @throws IOException at error
      */
-    public void copyFromInputToDestination(final Path inputPath, final Path destinationPath, final boolean overwrite) {
+    public void copyFromInputToDestination(final Path inputPath, final Path destinationPath, final boolean overwrite) throws IOException {
        /// TODO change for safe version with rollback
-        if (Files.isRegularFile(inputPath) || Files.isSymbolicLink(inputPath)) {
-            copyFile(inputPath,destinationPath,overwrite);
-            return;
+        try {
+            if (Files.isRegularFile(inputPath) || Files.isSymbolicLink(inputPath)) {
+                copyFile(inputPath,destinationPath,overwrite);
+            } else if (Files.isDirectory(inputPath)) {
+                copyDirectory(inputPath,destinationPath,overwrite);
+            }
+        } finally {
+            deleteAllTempFile();
         }
 
-        if(Files.isDirectory(inputPath)) {
-            Files.createDirectories(destinationPath);
-             DirectoryStream<Path> stream = Files.newDirectoryStream(inputPath);
-             for (Path path : stream) {
-                 copyFromInputToDestination(path,destinationPath.resolve(path.getFileName()),overwrite);
-             }
-        }
     }
 
     /**Delete all files, directory and sub directory from the path
      *
      * @param deletedPath
+     * @throws IOException at error
      */
     public void deleteFile(final Path deletedPath) throws IOException {
         Files.walkFileTree(deletedPath,new FileVisitorDelete());
@@ -87,7 +90,7 @@ public class FileProcess {
      *
      * @param file file
      * @param basePath basePath, not Null
-     * @return boolean
+     * @return boolean     *
      */
     private boolean checkBasePath(File file, String basePath) {
         return file.getPath().indexOf(basePath)>-1;
@@ -95,7 +98,7 @@ public class FileProcess {
 
     /**Copy file from inputPath to destinationPath call rollback() on error and throw IOException
      *
-     * @param inputPath  input path of file or directory
+     * @param inputPath  input path of file
      * @param destinationPath destination path
      * @param overwrite boolean overwrite
      * @throws IOException on error
@@ -103,6 +106,8 @@ public class FileProcess {
     private void copyFile (final Path inputPath, final Path destinationPath, final boolean overwrite) throws IOException {
         if (Files.exists(destinationPath)) {
             createTempFileAndAddToMap(destinationPath);
+        } else {
+            pathMap.put(destinationPath,null);
         }
         try {
             Files.createDirectories(destinationPath);
@@ -125,9 +130,61 @@ public class FileProcess {
         }
     }
 
+    /**Copy directory from inputPath to destinationPath call rollback() on error and throw IOException
+     *
+     * @param inputPath input path of directory
+     * @param destinationPath destination path
+     * @param overwrite boolean overwrite
+     * @throws IOException on error
+     */
+    private void copyDirectory(final Path inputPath, final Path destinationPath, final boolean overwrite) throws IOException {
+        for (Path path : destinationPath) {
+            if (!Files.exists(path)) {
+                pathMap.put(path,null);
+                try {
+                Files.createDirectory(path);
+                } catch (IOException ex) {
+                    rollback();
+                    throw ex;
+                }
+            }
+        }
+        try {
+            DirectoryStream<Path> stream = Files.newDirectoryStream(inputPath);
+            for (Path path : stream) {
+                copyFromInputToDestination(path,destinationPath.resolve(path.getFileName()),overwrite);
+            }
+        } catch (IOException ex) {
+            rollback();
+            throw ex;
+        }
+    }
 
+    private void deleteAllTempFile() {
+        for (Map.Entry<Path, Path> entry : pathMap.entrySet()) {
+            if (entry.getValue()!=null) {
+                try {
+                    deleteFile(entry.getValue());
+                } catch (Exception ex) {};
+            }
+        }
+    }
+
+    /**Try to rollback all change. all error are ignored
+     *
+     */
     private void rollback() {
-        //TODO
+        for (Map.Entry<Path, Path> entry : pathMap.entrySet()) {
+            if (entry.getValue()==null) {
+                try {
+                    Files.delete(entry.getKey());
+                } catch (Exception ex) {}
+            } else {
+                try {
+                    Files.copy(entry.getValue(),entry.getKey(),StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {  }
+            }
+        }
     }
 
     /**Create copy file from  inputPath to temp file and

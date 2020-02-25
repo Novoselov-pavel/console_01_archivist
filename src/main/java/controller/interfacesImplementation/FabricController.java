@@ -1,7 +1,7 @@
 package controller.interfacesImplementation;
 
 import controller.BashOptionRead;
-import controller.driver.GetCrc32;
+import controller.driver.Crc32Driver;
 import controller.interfaces.Crc32Interface;
 import controller.interfaces.FabricControllerInterface;
 import controller.interfaces.ProcessInterface;
@@ -52,12 +52,12 @@ public class FabricController implements FabricControllerInterface {
 
     @Override
     public String getCRCValueForDir() {
-        return GetCrc32.DIR_CRC;
+        return Crc32Driver.DIR_CRC;
     }
 
     @Override
     public Crc32Interface getCRC32Class() {
-        return new GetCrc32();
+        return new Crc32Driver();
     }
 
     @Override

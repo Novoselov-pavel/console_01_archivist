@@ -10,7 +10,7 @@ import java.util.LinkedList;
 
 public class BashOptionRead {
 
-    private String[] argument;
+    private final String[] argument;
 
     public BashOptionRead(String[] argument) {
 

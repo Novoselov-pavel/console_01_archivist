@@ -6,10 +6,11 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.zip.CRC32;
 
-public class GetCrc32 implements Crc32Interface {
+public class Crc32Driver implements Crc32Interface {
     private final int BUFFER_SIZE = 8192;
     public static final String DIR_CRC = "DIR";
     private String returnCrc32="";
+    @SuppressWarnings("CanBeFinal")
     private CRC32 crc32 = new CRC32();
 
 

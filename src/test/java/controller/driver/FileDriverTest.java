@@ -3,7 +3,6 @@ package controller.driver;
 import org.junit.jupiter.api.Test;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -11,15 +10,15 @@ import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FileProcessTest {
+class FileDriverTest {
 
     @Test
     void getNewTodayFile() {
-        FileProcess fileProcess = new FileProcess();
+        FileDriver fileDriver = new FileDriver();
         String dir = "/home/pavel/IdeaProjects/npn/console/01_archivist/src/test/java/controller/TestOutput/99";
         Path path = Paths.get(dir);
         try {
-            Path result = fileProcess.getNewTodayFile("%s_%d.zip",path,System.getProperty("consoleEncoding"));
+            Path result = fileDriver.getNewTodayFile("%s_%d.zip",path,System.getProperty("consoleEncoding"));
             Date date = new Date();
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
             String dateString = dateFormat.format(date);

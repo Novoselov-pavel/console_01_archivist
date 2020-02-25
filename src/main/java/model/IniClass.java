@@ -1,7 +1,5 @@
 package model;
 
-import gui.Archivist;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,6 +8,7 @@ import java.util.List;
 public class IniClass implements Serializable {
     private static final long serialVersionUID = 202001251002L;
     private transient final String PREFIX = "INI file for Archivist";
+    @SuppressWarnings("CanBeFinal")
     private transient FileItem iniFileItem;
     private List<FileItem> itemList;
 

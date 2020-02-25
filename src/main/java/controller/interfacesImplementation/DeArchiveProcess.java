@@ -1,7 +1,7 @@
 package controller.interfacesImplementation;
 
 
-import controller.driver.FileProcess;
+import controller.driver.FileDriver;
 import controller.driver.ZipDriver;
 import controller.interfaces.Crc32Interface;
 import controller.interfaces.FabricControllerInterface;
@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+@SuppressWarnings({"UnusedReturnValue", "SameReturnValue"})
 public class DeArchiveProcess implements ProcessInterface {
     private final FabricControllerInterface controller;
     private final ExitProgramInterface exitProgramInterface;
@@ -43,6 +44,7 @@ public class DeArchiveProcess implements ProcessInterface {
      */
     public boolean write() {
         Path outputTempPath = getTempPath(settings.getOutputPath(), "temp%d");
+        FileDriver fileDriver = new FileDriver();
        try {
            loadIniFileAndCheck();
            List<FileItem> list = unPackZipFileToTempFolder(outputTempPath);
@@ -51,10 +53,14 @@ public class DeArchiveProcess implements ProcessInterface {
            exitProgramInterface.exitProgram(2,ex, ex.getMessage());
        }
        try {
-           FileProcess fileProcess = new FileProcess();
-           fileProcess.copyFromInputToDestination(outputTempPath,settings.getOutputPath(),true);
+           fileDriver.copyFromInputToDestination(outputTempPath,settings.getOutputPath(),true);
        } catch (Exception ex) {
            exitProgramInterface.exitProgram(2, ex, ex.getMessage());
+       }
+       try {
+           fileDriver.deleteFile(outputTempPath);
+       } catch (IOException e) {
+           logger.writeErrorMessage(e,e.getMessage());
        }
         return true;
     }
@@ -65,6 +71,7 @@ public class DeArchiveProcess implements ProcessInterface {
      * @return true
      * @throws Exception if check was failed
      */
+    @SuppressWarnings("SameReturnValue")
     private boolean checkUnPackFiles(List<FileItem> items) throws Exception {
         for (FileItem item : items) {
             if (iniClass.checkCRC(item.getFilePath(),item.getCrc32()))
@@ -106,7 +113,7 @@ public class DeArchiveProcess implements ProcessInterface {
         FileItem zipFileItem = searchZIP(iniClass.getItemList());
         logger.writeLogger(String.format(LoggerMessages.BEGIN_UNPACK.getFormatter(),zipFileItem.getFilePath()));
 
-        zipFileItem.setFilePath(settings.getInputPath());
+        zipFileItem.setFilePath(settings.getInputPath().getParent().resolve(zipFileItem.getFilePath()));
         crc32.reset();
         crc32.update(zipFileItem.getFilePath().toFile());
         if (!zipFileItem.getCrc32().equals(crc32.getValue())) {
@@ -122,7 +129,7 @@ public class DeArchiveProcess implements ProcessInterface {
         return null;
     }
 
-    private Path getTempPath(Path outputPath, String pathFormat) {
+    private Path getTempPath(Path outputPath, @SuppressWarnings("SameParameterValue") String pathFormat) {
         int i = 0;
         String s = pathFormat+System.getProperty("file.separator");
         while (Files.exists(outputPath.resolve(String.format(s,i)))) {

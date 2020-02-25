@@ -21,6 +21,7 @@ public interface FabricControllerInterface {
     LoggerInterface getLoggerInterface();
 
 
+    @SuppressWarnings("SameReturnValue")
     String getCRCValueForDir();
 
     /**Create instance and return needed implementation {@link Crc32Interface}

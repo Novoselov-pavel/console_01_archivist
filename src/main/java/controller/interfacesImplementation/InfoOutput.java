@@ -4,7 +4,7 @@ import controller.interfaces.ProcessInterface;
 import gui.GetInfoInterface;
 
 public class InfoOutput implements ProcessInterface {
-    GetInfoInterface infoInterface;
+    private final GetInfoInterface  infoInterface;
 
     public InfoOutput(GetInfoInterface infoInterface) {
         this.infoInterface = infoInterface;

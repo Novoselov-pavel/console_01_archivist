@@ -11,6 +11,7 @@ import java.nio.file.Path;
  * Can exit program.
  *
  */
+@SuppressWarnings("CatchMayIgnoreException")
 public class Message implements ExitProgramInterface, LoggerInterface {
 
     private final SettingInterface settings;

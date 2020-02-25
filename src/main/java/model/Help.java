@@ -6,7 +6,7 @@ import gui.GetInfoInterface;
  *
  */
 public class  Help implements GetInfoInterface {
-    private static String[] help = {"Usage: Archivist.class [OPTION] [source] [destination]",
+    private static final String[] help = {"Usage: Archivist.class [OPTION] [source] [destination]",
                             "Archive/dearchive  all files and all dir from [source] to zip file + manifest with MD5.",
                             "OPTION can contain next option separated by space.",
                             "all option is case sensitive.",

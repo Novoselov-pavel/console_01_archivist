@@ -1,17 +1,13 @@
 package controller;
 
 import controller.interfaces.FabricControllerInterface;
-import controller.interfacesImplementation.ArchiveProcess;
 import controller.interfacesImplementation.FabricController;
 import exception.InvalidBashOption;
-import model.Settings;
 import org.junit.jupiter.api.Test;
 
-import javax.naming.ldap.ControlFactory;
 import java.io.UnsupportedEncodingException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ArchiveProcessTest {
 

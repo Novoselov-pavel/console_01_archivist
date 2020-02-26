@@ -184,7 +184,7 @@ public class ZipDriver {
             if (isDirectory(entry))
                 Files.createDirectories(path);
             else
-                Files.createDirectory(path.getParent());
+                Files.createDirectories(path.getParent());
         } catch (FileAlreadyExistsException e) {}
 
         if (isDirectory(entry)) {

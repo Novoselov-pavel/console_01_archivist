@@ -35,7 +35,7 @@ public class Settings implements SettingInterface {
             String conEnd = System.getProperty("consoleEncoding");
             if (conEnd==null) {
                     conEnd = System.getProperty("sun.jnu.encoding");
-                    if (conEnd!=null && "UTF-8".contains(conEnd.toLowerCase())) {
+                    if (conEnd!=null && !conEnd.toUpperCase().contains("UTF")) {
                         conEnd = "CP866";
                     }
             }

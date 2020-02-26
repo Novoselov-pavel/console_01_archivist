@@ -1,6 +1,8 @@
 package gui;
 
 
+import gui.interfaces.ExitProgramInterface;
+import gui.interfaces.LoggerInterface;
 import model.LoggerMessages;
 import model.SettingInterface;
 

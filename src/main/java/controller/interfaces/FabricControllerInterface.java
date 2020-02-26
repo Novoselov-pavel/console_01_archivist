@@ -1,7 +1,7 @@
 package controller.interfaces;
 
-import gui.ExitProgramInterface;
-import gui.LoggerInterface;
+import gui.interfaces.ExitProgramInterface;
+import gui.interfaces.LoggerInterface;
 import model.SettingInterface;
 
 public interface FabricControllerInterface {

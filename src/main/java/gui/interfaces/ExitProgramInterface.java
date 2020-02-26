@@ -1,4 +1,4 @@
-package gui;
+package gui.interfaces;
 
 public interface ExitProgramInterface {
     /** WWrite message, error and exit program with {@code status}

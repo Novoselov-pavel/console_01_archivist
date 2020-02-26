@@ -1,7 +1,7 @@
 package controller.interfacesImplementation;
 
 import controller.interfaces.ProcessInterface;
-import gui.GetInfoInterface;
+import gui.interfaces.GetInfoInterface;
 
 public class InfoOutput implements ProcessInterface {
     private final GetInfoInterface  infoInterface;

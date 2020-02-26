@@ -6,8 +6,8 @@ import controller.driver.ZipDriver;
 import controller.interfaces.Crc32Interface;
 import controller.interfaces.FabricControllerInterface;
 import controller.interfaces.ProcessInterface;
-import gui.ExitProgramInterface;
-import gui.LoggerInterface;
+import gui.interfaces.ExitProgramInterface;
+import gui.interfaces.LoggerInterface;
 import model.FileItem;
 import model.IniClass;
 import model.LoggerMessages;
@@ -15,6 +15,7 @@ import model.SettingInterface;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -59,6 +60,8 @@ public class DeArchiveProcess implements ProcessInterface {
        }
        try {
            fileDriver.deleteFile(outputTempPath);
+       } catch (NoSuchFileException e) {
+
        } catch (IOException e) {
            logger.writeErrorMessage(e,e.getMessage());
        }

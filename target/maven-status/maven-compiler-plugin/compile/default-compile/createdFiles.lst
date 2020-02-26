@@ -1,5 +1,8 @@
 model/BashOption.class
 controller/BashOptionRead.class
+gui/interfaces/LoggerInterface.class
 model/Help.class
 gui/Archivist.class
+gui/interfaces/ExitProgramInterface.class
 model/Settings.class
+gui/interfaces/GetInfoInterface.class

@@ -1,6 +1,6 @@
 package model;
 
-import gui.GetInfoInterface;
+import gui.interfaces.GetInfoInterface;
 
 /**Strings displayed for option -h or --help in command line
  *

@@ -14,6 +14,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 public class FileVisitorDelete extends SimpleFileVisitor<Path> {
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        if(Files.exists(file))
         Files.delete(file);
         return FileVisitResult.CONTINUE;
     }
@@ -21,7 +22,8 @@ public class FileVisitorDelete extends SimpleFileVisitor<Path> {
     @Override
     public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
         if (exc==null) {
-            Files.delete(dir);
+            if(Files.exists(dir))
+                Files.delete(dir);
             return FileVisitResult.CONTINUE;
         } else {
             throw exc;

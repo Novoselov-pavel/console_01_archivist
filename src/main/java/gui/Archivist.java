@@ -2,6 +2,7 @@ package gui;
 
 import controller.interfaces.FabricControllerInterface;
 import controller.interfacesImplementation.FabricController;
+import gui.interfaces.GetInfoInterface;
 
 /**Main class
  *

@@ -46,7 +46,10 @@ public class FileDriver {
         if (list == null)
             list = new ArrayList<>();
 
-        if (!Files.isRegularFile(sourceDirectory)) list.add(new FileItem(sourceDirectory,false,null));
+        if (Files.isRegularFile(sourceDirectory)) {
+            list.add(new FileItem(sourceDirectory,false,null));
+            return list;
+        }
 
         if (!Files.isDirectory(sourceDirectory)) return list;
 

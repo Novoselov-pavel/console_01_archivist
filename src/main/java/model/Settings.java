@@ -33,8 +33,12 @@ public class Settings implements SettingInterface {
         if (isCorrect(options,inputPath,outputPath)) {
             this.options = options;
             String conEnd = System.getProperty("consoleEncoding");
-            if (conEnd==null)
+            if (conEnd==null) {
                     conEnd = System.getProperty("sun.jnu.encoding");
+                    if (conEnd!=null && "UTF-8".contains(conEnd.toLowerCase())) {
+                        conEnd = "CP866";
+                    }
+            }
             if (conEnd == null)
                     conEnd ="UTF-8";
             this.consoleEncode = conEnd;

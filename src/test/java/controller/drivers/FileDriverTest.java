@@ -1,4 +1,4 @@
-package controller.driver;
+package controller.drivers;
 
 import org.junit.jupiter.api.Test;
 

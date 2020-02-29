@@ -1,4 +1,4 @@
-package controller.fileVisitors;
+package controller.filevisitors;
 
 import model.FileItem;
 

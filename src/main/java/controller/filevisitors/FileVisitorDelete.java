@@ -1,4 +1,4 @@
-package controller.fileVisitors;
+package controller.filevisitors;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;

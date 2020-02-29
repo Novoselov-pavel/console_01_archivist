@@ -1,4 +1,4 @@
-package controller.driver;
+package controller.drivers;
 
 import controller.interfaces.Crc32Interface;
 

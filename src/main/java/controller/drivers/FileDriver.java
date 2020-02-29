@@ -1,7 +1,7 @@
-package controller.driver;
+package controller.drivers;
 
-import controller.fileVisitors.FileVisitorAddFileItemToList;
-import controller.fileVisitors.FileVisitorDelete;
+import controller.filevisitors.FileVisitorAddFileItemToList;
+import controller.filevisitors.FileVisitorDelete;
 import model.FileItem;
 
 import java.io.File;

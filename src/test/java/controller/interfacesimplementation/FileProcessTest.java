@@ -1,8 +1,7 @@
-package controller.interfacesImplementation;
+package controller.interfacesimplementation;
 
 import controller.interfaces.FabricControllerInterface;
 import exception.InvalidBashOption;
-import org.junit.jupiter.api.Test;
 
 import java.io.UnsupportedEncodingException;
 

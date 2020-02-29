@@ -1,7 +1,7 @@
-package controller.interfacesImplementation;
+package controller.interfacesimplementation;
 
 import controller.BashOptionRead;
-import controller.driver.Crc32Driver;
+import controller.drivers.Crc32Driver;
 import controller.interfaces.Crc32Interface;
 import controller.interfaces.FabricControllerInterface;
 import controller.interfaces.ProcessInterface;

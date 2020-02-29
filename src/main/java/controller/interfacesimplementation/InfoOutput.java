@@ -1,4 +1,4 @@
-package controller.interfacesImplementation;
+package controller.interfacesimplementation;
 
 import controller.interfaces.ProcessInterface;
 import gui.interfaces.GetInfoInterface;

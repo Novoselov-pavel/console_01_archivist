@@ -1,7 +1,7 @@
 package controller;
 
 import controller.interfaces.FabricControllerInterface;
-import controller.interfacesImplementation.FabricController;
+import controller.interfacesimplementation.FabricController;
 import exception.InvalidBashOption;
 import org.junit.jupiter.api.Test;
 

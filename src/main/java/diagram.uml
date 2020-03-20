@@ -3,45 +3,102 @@
   <ID>JAVA</ID>
   <OriginalElement />
   <nodes>
-    <node x="0.0" y="358.0">controller.driver.ZipDriver</node>
-    <node x="275.75" y="0.0">controller.interfaces.ProcessInterface</node>
-    <node x="374.0" y="358.0">gui.Archivist</node>
-    <node x="113.5" y="179.0">model.SettingInterface</node>
-    <node x="0.0" y="258.0">model.Settings</node>
-    <node x="361.0" y="79.0">controller.interfacesImplementation.DeArchiveProcess</node>
-    <node x="0.0" y="79.0">controller.interfacesImplementation.ArchiveProcess</node>
-    <node x="433.5" y="179.0">controller.interfaces.FabricControllerInterface</node>
-    <node x="432.0" y="258.0">controller.interfacesImplementation.FabricController</node>
+    <node x="1127.0" y="191.0">controller.interfacesimplementation.DeArchiveProcess</node>
+    <node x="472.0" y="166.0">controller.interfacesimplementation.ArchiveProcess</node>
+    <node x="1537.0" y="442.0">controller.drivers.FileDriver</node>
+    <node x="1248.0" y="442.0">controller.filevisitors.FileVisitorAddFileItemToList</node>
+    <node x="893.0" y="442.0">controller.myguicontroller.GuiController</node>
+    <node x="689.7500000000001" y="38.5">controller.interfaces</node>
+    <node x="0.0" y="521.0">model.Settings</node>
+    <node x="1960.0" y="228.5">gui.Message</node>
+    <node x="1877.9318181818182" y="38.5">gui.interfaces.ExitProgramInterface</node>
+    <node x="1710.0" y="241.0">gui.myswinggui.ExitForm</node>
+    <node x="554.0" y="442.0">controller.drivers.ZipDriver</node>
+    <node x="758.0" y="228.5">controller.interfacesimplementation.FabricController</node>
+    <node x="1496.0" y="253.5">gui.myswinggui.HelpForm</node>
+    <node x="196.0" y="253.5">controller.interfacesimplementation.InfoOutput</node>
+    <node x="349.0" y="442.0">gui.interfaces.GetInfoInterface</node>
+    <node x="1609.5" y="0.0">gui.myswinggui.InfoForm</node>
+    <node x="349.0" y="521.0">gui.Archivist</node>
+    <node x="1813.0" y="442.0">controller.filevisitors.FileVisitorDelete</node>
+    <node x="72.0" y="442.0">model.SettingInterface</node>
+    <node x="0.0" y="216.0">controller.drivers.Crc32Driver</node>
   </nodes>
   <notes />
   <edges>
+    <edge source="controller.interfacesimplementation.ArchiveProcess" target="controller.interfaces">
+      <point x="0.0" y="-115.5" />
+      <point x="605.0" y="146.0" />
+      <point x="755.5833333333335" y="146.0" />
+      <point x="-13.166666666666629" y="14.5" />
+    </edge>
     <edge source="model.Settings" target="model.SettingInterface">
-      <point x="0.0" y="-27.5" />
+      <point x="0.0" y="-128.0" />
       <point x="0.0" y="14.5" />
     </edge>
-    <edge source="controller.interfacesImplementation.FabricController" target="controller.interfaces.FabricControllerInterface">
-      <point x="0.0" y="-27.5" />
+    <edge source="controller.interfacesimplementation.InfoOutput" target="controller.interfaces">
+      <point x="0.0" y="-28.0" />
+      <point x="324.0" y="136.0" />
+      <point x="729.2500000000001" y="136.0" />
+      <point x="-39.5" y="14.5" />
+    </edge>
+    <edge source="gui.myswinggui.ExitForm" target="gui.myswinggui.InfoForm">
+      <point x="-57.5" y="-40.5" />
+      <point x="1767.5" y="146.0" />
+      <point x="1752.0" y="146.0" />
+      <point x="47.5" y="53.0" />
+    </edge>
+    <edge source="controller.interfacesimplementation.FabricController" target="controller.interfaces">
+      <point x="0.0" y="-53.0" />
+      <point x="932.5" y="146.0" />
+      <point x="781.9166666666667" y="146.0" />
+      <point x="13.166666666666629" y="14.5" />
+    </edge>
+    <edge source="gui.myswinggui.ExitForm" target="gui.interfaces.ExitProgramInterface">
+      <point x="57.5" y="-40.5" />
+      <point x="1882.5" y="146.0" />
+      <point x="1924.9318181818182" y="146.0" />
+      <point x="-47.0" y="14.5" />
+    </edge>
+    <edge source="controller.drivers.Crc32Driver" target="controller.interfaces">
+      <point x="0.0" y="-65.5" />
+      <point x="88.0" y="126.0" />
+      <point x="702.9166666666667" y="126.0" />
+      <point x="-65.83333333333337" y="14.5" />
+    </edge>
+    <edge source="gui.Archivist" target="gui.interfaces.GetInfoInterface">
+      <point x="0.0" y="-28.0" />
       <point x="0.0" y="14.5" />
     </edge>
-    <edge source="controller.interfacesImplementation.DeArchiveProcess" target="controller.interfaces.ProcessInterface">
-      <point x="0.0" y="-27.5" />
-      <point x="541.0" y="54.0" />
-      <point x="395.75" y="54.0" />
-      <point x="40.0" y="14.5" />
+    <edge source="gui.myswinggui.HelpForm" target="gui.myswinggui.InfoForm">
+      <point x="48.5" y="-28.0" />
+      <point x="1641.5" y="146.0" />
+      <point x="1657.0" y="146.0" />
+      <point x="-47.5" y="53.0" />
     </edge>
-    <edge source="controller.interfacesImplementation.ArchiveProcess" target="controller.interfaces.ProcessInterface">
-      <point x="0.0" y="-27.5" />
-      <point x="170.5" y="54.0" />
-      <point x="315.75" y="54.0" />
-      <point x="-40.0" y="14.5" />
+    <edge source="controller.interfacesimplementation.DeArchiveProcess" target="controller.interfaces">
+      <point x="0.0" y="-90.5" />
+      <point x="1301.5" y="136.0" />
+      <point x="808.2500000000001" y="136.0" />
+      <point x="39.5" y="14.5" />
+    </edge>
+    <edge source="gui.myswinggui.HelpForm" target="controller.interfaces">
+      <point x="-48.5" y="-28.0" />
+      <point x="1544.5" y="126.0" />
+      <point x="834.5833333333334" y="126.0" />
+      <point x="65.83333333333326" y="14.5" />
+    </edge>
+    <edge source="gui.Message" target="gui.interfaces.ExitProgramInterface">
+      <point x="0.0" y="-53.0" />
+      <point x="2070.0" y="146.0" />
+      <point x="2018.9318181818182" y="146.0" />
+      <point x="47.0" y="14.5" />
     </edge>
   </edges>
-  <settings layout="Hierarchic Group" zoom="1.0" x="714.0" y="313.0" />
-  <SelectedNodes>
-    <node>controller.driver.ZipDriver</node>
-  </SelectedNodes>
+  <settings layout="Hierarchic Group" zoom="0.7000000000000001" x="1206.4166666666667" y="378.62500000000017" />
+  <SelectedNodes />
   <Categories>
-    <Category>Constructors</Category>
+    <Category>Fields</Category>
   </Categories>
   <SCOPE>All</SCOPE>
   <VISIBILITY>private</VISIBILITY>

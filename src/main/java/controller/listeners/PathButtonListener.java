@@ -4,6 +4,7 @@ import gui.myswinggui.GuiMainFrame;
 import gui.myswinggui.GuiMainFrameAdapter;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -23,6 +24,7 @@ public class PathButtonListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         GuiMainFrame main = guiMainFrameAdapter.getMainFrame();
         int returnVal = chooser.showOpenDialog(main);
         chooser.setSize(1200,500);

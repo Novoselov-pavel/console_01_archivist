@@ -66,7 +66,6 @@ public class FileDriver {
      * @throws IOException at error
      */
     public void copyFromInputToDestination(final Path inputPath, final Path destinationPath, final boolean overwrite) throws IOException {
-       /// TODO change for safe version with rollback
         try {
             if (Files.isRegularFile(inputPath) || Files.isSymbolicLink(inputPath)) {
                 copyFile(inputPath,destinationPath,overwrite);

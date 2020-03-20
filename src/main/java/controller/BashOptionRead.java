@@ -39,4 +39,8 @@ public class BashOptionRead {
         return settings;
     }
 
+
+
+
+
 }

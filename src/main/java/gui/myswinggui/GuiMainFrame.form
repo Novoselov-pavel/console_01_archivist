@@ -79,7 +79,9 @@
             <preferred-size width="150" height="25"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <font size="16"/>
+        </properties>
       </component>
       <component id="5194" class="javax.swing.JTextArea" binding="secondPathArea">
         <constraints>
@@ -87,7 +89,9 @@
             <preferred-size width="150" height="25"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <font size="16"/>
+        </properties>
       </component>
       <component id="70325" class="javax.swing.JButton" binding="actionButton">
         <constraints>

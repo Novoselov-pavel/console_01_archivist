@@ -1,21 +1,25 @@
 package gui.myswinggui;
 
+import controller.drivers.ResourceBundleDriver;
 import model.BashOption;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.ResourceBundle;
 
 public class GuiMainFrameAdapter {
     private final GuiMainFrame mainFrame;
-    private final ResourceBundle inputBundle;
+    private final ResourceBundleDriver resourceDriver;
 
-    public GuiMainFrameAdapter(ResourceBundle inputBundle) {
-        this.inputBundle = inputBundle;
+    public GuiMainFrameAdapter(ResourceBundleDriver resourceDriver) {
+        this.resourceDriver = resourceDriver;
         mainFrame = new GuiMainFrame();
         mainFrame.setTitle("Archivist");
         mainFrame.setSize(1000,250);
+        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screenSize.width / 2) - (mainFrame.getWidth() / 2);
+        int y = (screenSize.height / 2) - (mainFrame.getHeight() / 2);
+        mainFrame.setLocation(x, y);
     }
 
     public void addFirstPathActionListener(ActionListener actionListener) {
@@ -54,29 +58,14 @@ public class GuiMainFrameAdapter {
      *
      */
     public void initComponent() {
-        setLocalization(mainFrame);
+        resourceDriver.setLocalization(mainFrame);
         mainFrame.getFirstPathArea().setLineWrap(true);
         mainFrame.getSecondPathArea().setLineWrap(true);
         mainFrame.getFirstPathArea().setEditable(false);
         mainFrame.getSecondPathArea().setEditable(false);
     }
 
-    /**Set localization from {@link ResourceBundle}
-     *
-     * @param input component from each (down hierarchy) localization has set
-     */
-    public void setLocalization(Component input) {
-        if (input instanceof Container) {
-            for (Component component : ((Container) input).getComponents()) {
-                if (component instanceof AbstractButton) {
-                    try {
-                        ((AbstractButton) component).setText(inputBundle.getString(((AbstractButton) component).getText()));
-                    } catch (Exception ex) { }
-                }
-                setLocalization(component);
-            }
-        }
-    }
+
 
     /**Sets the operation that will happen by default when the user initiates a "close" on Main frame.     *
      *
